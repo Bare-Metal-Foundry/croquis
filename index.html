@@ -3,17 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Croquis — parametric 2D sketcher for engineering drawings</title>
-<meta name="description" content="Croquis is a free, browser-based parametric 2D sketcher: SolidWorks-style relations and dimensions, drawing sheets with title blocks, and PDF, SVG, DXF and TikZ export. Nothing to install.">
+<title>Croquis — quick constrained 2D sketches and schematics</title>
+<meta name="description" content="Croquis is a free, browser-based 2D sketcher for fast schematics and illustrations: constrain a sketch with relations and dimensions, drag it by hand to see how it moves, and export a PDF, SVG, DXF or TikZ figure. Nothing to install.">
 <meta name="author" content="Stépane Binon">
 <meta name="theme-color" content="#161a1f">
-<meta property="og:title" content="Croquis — parametric 2D sketcher">
-<meta property="og:description" content="Sketch, constrain and dimension 2D geometry in your browser, then export a PDF drawing, SVG, DXF or TikZ.">
+<meta property="og:title" content="Croquis — quick constrained 2D sketches">
+<meta property="og:description" content="Sketch, constrain and drag 2D schematics in your browser, then export a PDF, SVG, DXF or TikZ figure.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect x='1.5' y='1.5' width='23' height='23' rx='5' fill='%23161a1f'/%3E%3Cpath d='M6 19.5L14.5 6.5' stroke='%23fbfcfd' stroke-width='1.7' fill='none'/%3E%3Cpath d='M14.5 6.5a6.5 6.5 0 0 1 5 6.5' stroke='%230a98ae' stroke-width='1.7' fill='none'/%3E%3Ccircle cx='6' cy='19.5' r='1.8' fill='%23fbfcfd'/%3E%3Ccircle cx='14.5' cy='6.5' r='1.8' fill='%23fbfcfd'/%3E%3C/svg%3E">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&text=CROQUIS.&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&family=B612+Mono:wght@400;700&display=swap">
 <style>
 /* Layout: CAD workspace. A CommandManager ribbon of sketch tools sits over a
@@ -28,8 +29,8 @@
   --rule: #cfd5db;
   --hover-bg: rgba(22, 26, 31, 0.06);
   --active-bg: #dbf1f5;
-  --grid-minor: rgba(28, 52, 84, 0.055);
-  --grid-major: rgba(28, 52, 84, 0.12);
+  --grid-minor: rgba(28, 52, 84, 0.045);
+  --grid-major: rgba(28, 52, 84, 0.10);
   --axis: rgba(28, 52, 84, 0.26);
   --under: #1450d2;
   --over: #cf2e25;
@@ -58,7 +59,7 @@
     --chrome: #111519; --panel: #171c21; --sheet: #0d1114; --field: #0f1317;
     --ink: #e4e9ee; --ink-soft: #95a0ab; --rule: #29313a;
     --hover-bg: rgba(228, 233, 238, 0.07); --active-bg: #0e3940;
-    --grid-minor: rgba(160, 190, 220, 0.055); --grid-major: rgba(160, 190, 220, 0.12); --axis: rgba(160, 190, 220, 0.3);
+    --grid-minor: rgba(160, 190, 220, 0.045); --grid-major: rgba(160, 190, 220, 0.10); --axis: rgba(160, 190, 220, 0.3);
     --under: #7aa7ff; --over: #ff6d60; --driven: #8a95a0; --hover: #ffa94a; --select: #3cd0e4; --select-ink: #8be6f2;
     --rel-bg: #15301e; --rel-line: #3f8b57; --rel-ink: #93e2aa; --infer-bg: #4a3a0a; --infer-ink: #ffd76e;
     --guide: rgba(122, 167, 255, 0.6); --trim: rgba(255, 109, 96, 0.55);
@@ -71,7 +72,7 @@
   --chrome: #111519; --panel: #171c21; --sheet: #0d1114; --field: #0f1317;
   --ink: #e4e9ee; --ink-soft: #95a0ab; --rule: #29313a;
   --hover-bg: rgba(228, 233, 238, 0.07); --active-bg: #0e3940;
-  --grid-minor: rgba(160, 190, 220, 0.055); --grid-major: rgba(160, 190, 220, 0.12); --axis: rgba(160, 190, 220, 0.3);
+  --grid-minor: rgba(160, 190, 220, 0.045); --grid-major: rgba(160, 190, 220, 0.10); --axis: rgba(160, 190, 220, 0.3);
   --under: #7aa7ff; --over: #ff6d60; --driven: #8a95a0; --hover: #ffa94a; --select: #3cd0e4; --select-ink: #8be6f2;
   --rel-bg: #15301e; --rel-line: #3f8b57; --rel-ink: #93e2aa; --infer-bg: #4a3a0a; --infer-ink: #ffd76e;
   --guide: rgba(122, 167, 255, 0.6); --trim: rgba(255, 109, 96, 0.55);
@@ -101,22 +102,31 @@ svg.i.sm { width: 18px; height: 18px; }
 .band { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
 /* ---------- top bar ---------- */
-.topbar { display: flex; align-items: center; gap: 12px; padding-block: 8px; min-width: 0; }
+.topbar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr); align-items: center; gap: 12px; padding-block: 2px; min-width: 0; }
+.topbar .brand { justify-self: start; }
+.topbar .actions { justify-self: end; }
 .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; letter-spacing: 0.01em; white-space: nowrap; padding: 2px 6px 2px 2px; margin-left: -2px; border: 0; border-radius: 7px; background: transparent; }
 .brand:hover { background: var(--hover-bg); }
+/* Wordmark: Unbounded, loaded for these eight letters only. */
+.wordmark, .brand .word { font-family: "Unbounded", var(--font-ui); font-weight: 700; letter-spacing: 0.07em; line-height: 1; }
+.brand .word { font-size: 14.5px; padding-top: 1px; }
+.wordmark .dot, .brand .word .dot { color: var(--select); }
 .brand svg { width: 26px; height: 26px; }
-.doc { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+.doc { display: flex; align-items: center; justify-content: center; min-width: 0; }
 .doc-name {
-  min-width: 0; width: 100%; max-width: 340px; padding: 4px 8px; border: 1px solid transparent; border-radius: 6px;
+  flex: none;
+  min-width: 0; width: 300px; max-width: 100%; padding: 3px 8px; text-align: center; border: 1px solid transparent; border-radius: 6px;
   background: transparent; font-weight: 500; font-size: 15px; text-overflow: ellipsis;
 }
 .doc-name:hover { border-color: var(--rule); }
 .doc-name:focus { border-color: var(--select); background: var(--field); outline: none; }
-.save-state { font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
+.save-state { font: 12px var(--font-ui); color: var(--ink-soft); white-space: nowrap; }
 .save-state.dirty::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--hover); margin-right: 6px; vertical-align: 1px; }
-.actions { display: flex; align-items: center; gap: 2px; }
+.actions { display: flex; flex-wrap: nowrap; align-items: center; gap: 2px; }
+/* the centered sketch name leaves the buttons half the width: labels only on wide windows */
+@media (max-width: 1500px) { .ab .lbl { display: none; } .ab { padding: 0 7px; } }
 .ab {
-  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px;
+  display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px;
   border: 1px solid transparent; border-radius: 6px; background: transparent; font-weight: 500; white-space: nowrap;
 }
 .ab:hover { background: var(--hover-bg); }
@@ -131,21 +141,21 @@ svg.i.sm { width: 18px; height: 18px; }
 .menu button:hover, .menu button:focus-visible { background: var(--hover-bg); }
 .menu .ext { font: 11.5px var(--font-num); color: var(--ink-soft); }
 
-/* ---------- document tabs ---------- */
-.doctabs { display: flex; align-items: flex-end; gap: 2px; min-width: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; padding-top: 2px; }
+/* ---------- document tabs, in the footer like sheet tabs ---------- */
+.doctabs { display: flex; align-items: flex-start; align-self: stretch; gap: 2px; flex: 1 1 auto; min-width: 90px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; font: 13px var(--font-ui); }
 .doctabs::-webkit-scrollbar { display: none; }
 .dtab {
-  display: flex; align-items: center; gap: 4px; height: 30px; max-width: 220px; min-width: 0; padding: 0 4px 0 11px; flex: none;
-  border: 1px solid transparent; border-bottom: 0; border-radius: 7px 7px 0 0; background: transparent; color: var(--ink-soft); cursor: pointer; user-select: none;
+  display: flex; align-items: center; gap: 4px; height: 21px; max-width: 220px; min-width: 0; padding: 0 3px 0 10px; flex: none;
+  border: 1px solid transparent; border-top: 0; border-radius: 0 0 6px 6px; background: transparent; color: var(--ink-soft); cursor: pointer; user-select: none;
 }
 .dtab:hover { background: var(--hover-bg); color: var(--ink); }
-.dtab[aria-selected="true"] { background: var(--panel); border-color: var(--rule); color: var(--ink); box-shadow: inset 0 2px 0 var(--select); }
+.dtab[aria-selected="true"] { background: var(--panel); border-color: var(--rule); color: var(--ink); box-shadow: inset 0 -2px 0 var(--select); }
 .dtab .dt-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; font-size: 13.5px; }
 .dtab .dt-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hover); flex: none; }
-.dtab .dt-x { display: inline-flex; width: 22px; height: 22px; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 5px; background: transparent; color: var(--ink-soft); flex: none; }
+.dtab .dt-x { display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 5px; background: transparent; color: var(--ink-soft); flex: none; }
 .dtab .dt-x:hover { background: var(--hover-bg); color: var(--over); }
 .dtab .dt-x svg { width: 14px; height: 14px; }
-.dtab-new { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 28px; margin-bottom: 1px; border: 0; border-radius: 6px; background: transparent; color: var(--ink-soft); flex: none; }
+.dtab-new { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 21px; border: 0; border-radius: 6px; background: transparent; color: var(--ink-soft); flex: none; }
 .dtab-new:hover { background: var(--hover-bg); color: var(--ink); }
 
 /* ---------- viewer and embed modes ---------- */
@@ -154,14 +164,14 @@ svg.i.sm { width: 18px; height: 18px; }
 .viewbar .vb-name { font-weight: 600; font-size: 15px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .viewbar .vb-note { font-size: 12.5px; color: var(--ink-soft); padding: 1px 8px; border: 1px solid var(--rule); border-radius: 999px; white-space: nowrap; }
 .viewbar .grow { flex: 1; }
-body.viewer .ribbon, body.viewer .doctabs, body.viewer .pm, body.viewer .side, body.viewer .actions, body.viewer .doc,
-body.viewer #btnSnap, body.viewer #btnSide, body.viewer #storeInfo { display: none !important; }
-body.viewer .main, body.viewer .main.with-side { grid-template-columns: minmax(0, 1fr); }
+body.viewer .ribbon, body.viewer .doctabs, body.viewer .pm, body.viewer .actions, body.viewer .doc,
+body.viewer #btnSnap, body.viewer #btnUnits { display: none !important; }
+body.viewer .main { grid-template-columns: minmax(0, 1fr); }
+body.viewer .statusbar { min-height: 26px; }
 body.viewer .stage canvas { cursor: grab; }
 body.embed .topbar, body.embed .viewbar, body.embed .statusbar { display: none !important; }
 body.embed .main { padding: 0; }
 body.embed .stage { border: 0; border-radius: 0; }
-body.embed .view-hud { top: 6px; right: 6px; }
 .embed-open {
   position: fixed; right: 8px; bottom: 8px; z-index: 40; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 5px;
   border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); font-size: 12.5px; font-weight: 600; text-decoration: none; box-shadow: 0 4px 14px var(--shadow);
@@ -180,7 +190,7 @@ body.embed .view-hud { top: 6px; right: 6px; }
 .dlg-sec h3 { margin: 0 0 8px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
 .about-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
 .about-head svg { width: 46px; height: 46px; flex: none; }
-.about-head h3 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: 0.01em; }
+.about-head h3 { margin: 0 0 4px; font-size: 22px; }
 .about-head p { margin: 2px 0 0; color: var(--ink-soft); }
 .link-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 2px; padding: 0; list-style: none; }
 .link-list a { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border: 1px solid var(--rule); border-radius: 6px; background: var(--field); color: var(--ink); text-decoration: none; font-weight: 500; }
@@ -198,21 +208,23 @@ body.embed .view-hud { top: 6px; right: 6px; }
 input[type="range"] { width: 100%; accent-color: var(--select); }
 
 /* ---------- ribbon (CommandManager) ---------- */
-.ribbon { display: flex; flex-direction: column; min-width: 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: var(--panel); }
-.ribbon-scroll { min-width: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
-.ribbon-tabs { display: flex; gap: 2px; padding: 0 0 4px; }
-.rtab { height: 22px; padding: 0 14px; border: 0; border-radius: 0 0 6px 6px; background: transparent; font-weight: 600; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-soft); }
+/* Toolbar: a column on the right of the sheet, two tools per row, with
+   the Sketch / Notes switch on top. */
+.ribbon { display: flex; flex-direction: column; width: 78px; min-height: 0; padding: 4px; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); overflow: hidden; }
+.ribbon-scroll { flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; overscroll-behavior: contain; }
+.ribbon-tabs { order: -1; display: flex; flex-direction: column; gap: 2px; flex: none; padding: 0 0 4px; margin-bottom: 2px; border-bottom: 1px solid var(--rule); }
+.rtab { flex: none; height: 24px; padding: 0 4px; border: 0; border-radius: 6px; background: transparent; font-weight: 600; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-soft); }
 .rtab:hover { color: var(--ink); background: var(--hover-bg); }
-.rtab[aria-selected="true"] { color: var(--select-ink); background: var(--active-bg); box-shadow: inset 0 2px 0 var(--select); }
-.ribbon-in { display: flex; align-items: stretch; gap: 0; min-width: max-content; padding-block: 4px 2px; }
-.grp { display: flex; flex-direction: column; padding: 0 6px; }
-.grp + .grp { border-left: 1px solid var(--rule); }
-.grp-btns { display: flex; gap: 1px; }
-.grp-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); text-align: center; padding: 1px 0 2px; }
+.rtab[aria-selected="true"] { color: var(--select-ink); background: var(--active-bg); box-shadow: inset 0 -2px 0 var(--select); }
+.ribbon-in { display: flex; flex-direction: column; padding: 0; }
+.grp { display: flex; flex-direction: column; padding: 3px 0 5px; }
+.grp + .grp { border-top: 1px solid var(--rule); }
+.grp-btns { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.grp-label { order: -1; font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); padding: 2px 4px 3px; }
 .tb {
   position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  min-width: 54px; height: 50px; padding: 0 4px; border: 1px solid transparent; border-radius: 6px;
-  background: transparent; font-weight: 500; font-size: 12px; line-height: 1.05; white-space: nowrap;
+  min-width: 0; height: auto; min-height: 44px; padding: 3px 2px; border: 1px solid transparent; border-radius: 6px;
+  background: transparent; font-weight: 500; font-size: 11px; line-height: 1.05; text-align: center; white-space: normal; letter-spacing: -0.01em;
 }
 .tb:hover { background: var(--hover-bg); }
 .tb[aria-pressed="true"] { background: var(--active-bg); border-color: var(--select); color: var(--select-ink); }
@@ -220,9 +232,18 @@ input[type="range"] { width: 100%; accent-color: var(--select); }
 .only-narrow { display: none; }
 
 /* ---------- main: PropertyManager + sheet ---------- */
-.main { position: relative; display: grid; grid-template-columns: 284px minmax(0, 1fr); gap: 10px; padding-block: 10px; min-height: 0; }
+.main { position: relative; display: grid; grid-template-columns: 284px minmax(0, 1fr) auto; gap: 10px; padding-block: 10px; min-height: 0; }
 .pm { display: flex; flex-direction: column; min-height: 0; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
-.pm-head { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--rule); min-height: 44px; }
+.pm-head { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid var(--rule); min-height: 38px; }
+/* one side panel, two views: Properties and Browser */
+.ptabs { display: flex; align-items: flex-end; gap: 2px; padding: 4px 4px 0; border-bottom: 1px solid var(--rule); flex: none; }
+.ptab { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; border: 0; border-radius: 6px 6px 0 0; background: transparent; font-weight: 600; font-size: 13.5px; color: var(--ink-soft); }
+.ptab:hover { color: var(--ink); background: var(--hover-bg); }
+.ptab[aria-selected="true"] { color: var(--select-ink); box-shadow: inset 0 -2px 0 var(--select); }
+.ptabs .pm-close { align-self: center; }
+.pview { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+.pview[hidden] { display: none; }
+body.no-help .help, body.no-help .sb-empty, body.no-help .note-line { display: none !important; }
 .pm-head h2 { margin: 0; font-size: 15px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pm-close { display: none; }
 .pm-body { flex: 1; overflow-y: auto; padding: 4px 0 14px; overscroll-behavior: contain; }
@@ -283,11 +304,14 @@ input[type="range"] { width: 100%; accent-color: var(--select); }
 
 .stage { position: relative; min-width: 0; min-height: 0; background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
 .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; outline: none; }
-.view-hud { position: absolute; top: 8px; right: 8px; display: flex; gap: 2px; padding: 3px; background: var(--panel); border: 1px solid var(--rule); border-radius: 7px; z-index: 4; }
-.view-hud button { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 7px; border: 0; border-radius: 5px; background: transparent; font-size: 12.5px; font-weight: 500; }
-.view-hud button:hover { background: var(--hover-bg); }
-.view-hud button[aria-pressed="true"] { background: var(--active-bg); color: var(--select-ink); }
-.view-hud .zoom { font: 12px var(--font-num); color: var(--ink-soft); padding: 0 6px; align-self: center; min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
+.fview { display: flex; align-items: center; gap: 1px; }
+.fbtn { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 20px; padding: 0; border: 0; border-radius: 5px; background: transparent; color: var(--ink-soft); }
+.fbtn:hover { background: var(--hover-bg); color: var(--ink); }
+.fbtn[aria-pressed="true"] { background: var(--active-bg); color: var(--select-ink); }
+.fbtn svg { width: 16px; height: 16px; }
+.fbtn.funits { width: auto; padding: 0 6px; font: 12px var(--font-num); color: var(--ink); border: 1px solid var(--rule); }
+.dirty-star { margin-left: -4px; font-weight: 600; font-size: 17px; color: var(--hover); cursor: help; }
+.fview .zoom { min-width: 76px; padding-left: 6px; text-align: right; }
 
 .modify {
   position: absolute; z-index: 20; width: 232px; padding: 8px; display: grid; gap: 6px;
@@ -315,8 +339,8 @@ input[type="range"] { width: 100%; accent-color: var(--select); }
 .toast.err { background: var(--over); color: #fff; }
 
 /* ---------- status bar ---------- */
-.statusbar { display: flex; align-items: center; gap: 16px; padding-block: 5px 6px; font: 12px var(--font-num); color: var(--ink-soft); white-space: nowrap; overflow-x: auto; scrollbar-width: none; font-variant-numeric: tabular-nums; }
-.statusbar .grow { flex: 1; }
+.statusbar { display: flex; align-items: center; gap: 14px; min-height: 22px; padding-block: 0; font: 12px var(--font-num); color: var(--ink-soft); white-space: nowrap; overflow: hidden; font-variant-numeric: tabular-nums; }
+.statusbar > :not(.doctabs) { flex: none; }
 .state { font: 600 12.5px var(--font-ui); letter-spacing: 0.02em; padding: 1px 9px; border-radius: 999px; }
 .state.under { color: var(--under); background: var(--under-tint); }
 .state.full { color: var(--ink); background: var(--full-tint); }
@@ -343,11 +367,6 @@ input[type="range"] { width: 100%; accent-color: var(--select); }
 .empty-lib { padding: 24px 8px; text-align: center; color: var(--ink-soft); }
 
 /* ---------- browser: groups, note layers, variables ---------- */
-.main.with-side { grid-template-columns: 284px minmax(0, 1fr) 260px; }
-.side { display: none; flex-direction: column; min-height: 0; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
-.main.with-side .side { display: flex; }
-.side-head { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 12px; border-bottom: 1px solid var(--rule); min-height: 44px; }
-.side-head h2 { margin: 0; flex: 1; font-size: 15px; font-weight: 600; }
 .side-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 12px; }
 .sb-sec { padding: 8px 8px 6px; }
 .sb-sec + .sb-sec { border-top: 1px solid var(--rule); }
@@ -439,12 +458,24 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
 .eq-hint code { font: 12px var(--font-num); color: var(--ink); }
 
 @media (max-width: 1180px) {
-  .main.with-side { grid-template-columns: 284px minmax(0, 1fr); }
-  .side { position: absolute; z-index: 16; top: 10px; bottom: 10px; right: max(16px, env(safe-area-inset-right, 0px)); width: min(280px, calc(100% - 32px)); box-shadow: 0 14px 40px var(--shadow); }
-  .view-hud .lbl { display: none; }
+  #sheetInfo { display: none; }
 }
 @media (max-width: 760px) {
-  .main, .main.with-side { grid-template-columns: minmax(0, 1fr); }
+  .main { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 8px; }
+  .ribbon { grid-row: 1; flex-direction: row; width: auto; padding: 0; }
+  .ribbon-scroll { overflow-x: auto; overflow-y: hidden; }
+  .ribbon-tabs { flex-direction: column; justify-content: center; gap: 3px; padding: 4px; margin: 0; border-bottom: 0; border-right: 1px solid var(--rule); }
+  .rtab { flex: none; height: 24px; }
+  .ribbon-tabs { flex-direction: column; }
+  .tb { min-height: 0; }
+  .ribbon-in { flex-direction: row; min-width: max-content; padding-block: 3px; }
+  .grp { padding: 0 5px; }
+  .grp + .grp { border-top: 0; border-left: 1px solid var(--rule); }
+  .grp-btns { display: flex; gap: 1px; }
+  .grp-label { order: 0; text-align: center; padding: 1px 0 0; }
+  .tb { width: 58px; height: 46px; white-space: nowrap; overflow-wrap: normal; }
+  .stage { grid-row: 2; }
+  #selInfo { display: none; }
   .pm {
     position: absolute; z-index: 15; top: 10px; bottom: 10px; left: max(16px, env(safe-area-inset-left, 0px));
     width: min(300px, calc(100% - 32px)); box-shadow: 0 14px 40px var(--shadow);
@@ -458,9 +489,13 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
   .dtab { max-width: 160px; }
 
   .ab .lbl { display: none; }
-  .ab { padding: 0 7px; }
+  .ab { padding: 0 5px; }
+  .actions { flex-wrap: nowrap; gap: 0; }
+  .topbar { gap: 6px; }
+  .topbar { display: flex; }
+  .doc { display: none; }
+  .topbar .actions { margin-left: auto; }
   .save-state { display: none; }
-  .view-hud .zoom { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .pm { transition: none; } }
 
@@ -537,6 +572,12 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
     <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="6" y="10.5" width="12" height="9" rx="1.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 6.8-1.2"/></symbol>
     <symbol id="i-more" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1.4" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"/></symbol>
+    <symbol id="i-gridlines" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16" opacity=".7"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
+    <symbol id="i-shrink" viewBox="0 0 24 24"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></symbol>
+    <symbol id="i-theme-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.8"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A7.8 7.8 0 0 1 9.5 4.5a7.8 7.8 0 1 0 10 10z"/></symbol>
     <symbol id="i-offset" viewBox="0 0 24 24"><path d="M4 19V10a5 5 0 0 1 5-5h11"/><path d="M8 19v-8a1.8 1.8 0 0 1 1.8-1.8H20" stroke-dasharray="2.4 1.8"/></symbol>
     <symbol id="i-sheet" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="1"/><rect x="5" y="6.5" width="14" height="11" stroke-width="1"/><path d="M12 14.2h7M12 17.5v-3.3M15.5 14.2v3.3" stroke-width="1"/></symbol>
     <symbol id="i-picture" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><circle cx="9" cy="10" r="1.6"/><path d="M3.8 17l5-4.6 3.6 3.2 2.6-2.4 5.3 4.6"/></symbol>
@@ -551,19 +592,19 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
 
 <div class="app" id="app">
   <header class="topbar band">
-    <button class="brand" id="btnBrand" type="button" title="About Croquis"><svg aria-hidden="true"><use href="#i-brand"/></svg><span class="word">Croquis</span></button>
+    <button class="brand" id="btnBrand" type="button" title="About Croquis"><svg aria-hidden="true"><use href="#i-brand"/></svg><span class="word">CROQUIS<span class="dot">.</span></span></button>
     <div class="doc">
       <input id="docName" class="doc-name" type="text" value="" aria-label="Sketch name" spellcheck="false" autocomplete="off">
-      <span id="saveState" class="save-state" aria-live="polite"></span>
+      <span class="dirty-star" id="dirtyStar" hidden aria-label="unsaved changes">*</span>
     </div>
     <div class="actions">
       <button class="ab" id="btnNew" title="New sketch"><svg class="i sm"><use href="#i-new"/></svg><span class="lbl">New</span></button>
       <button class="ab" id="btnOpen" title="Open a saved sketch (Ctrl+O)"><svg class="i sm"><use href="#i-open"/></svg><span class="lbl">Open</span></button>
       <button class="ab" id="btnSave" title="Save (Ctrl+S)"><svg class="i sm"><use href="#i-save"/></svg><span class="lbl">Save</span></button>
-      <button class="ab" id="btnShare" title="Share a link or embed this drawing"><svg class="i sm"><use href="#i-share"/></svg><span class="lbl">Share</span></button>
       <div class="menu-wrap">
         <button class="ab" id="btnExport" aria-haspopup="menu" aria-expanded="false" title="Export or import a file"><svg class="i sm"><use href="#i-export"/></svg><span class="lbl">File</span><svg class="i sm"><use href="#i-chev"/></svg></button>
         <div class="menu" id="exportMenu" role="menu" hidden>
+          <button role="menuitem" data-act="share">Share a link or embed <span class="ext">view · edit · iframe</span></button>
           <button role="menuitem" data-act="saveas">Save as copy <span class="ext"></span></button>
           <button role="menuitem" data-act="json">Export sketch <span class="ext">.json</span></button>
           <button role="menuitem" data-act="pdf">Export PDF drawing <span class="ext">.pdf</span></button>
@@ -577,11 +618,14 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
           <button role="menuitem" data-act="example">Open the example sketch <span class="ext"></span></button>
         </div>
       </div>
+      <button class="ab icon-only" id="btnFull" type="button" title="Full screen" aria-label="Full screen" aria-pressed="false"><svg class="i sm"><use href="#i-expand"/></svg></button>
+      <button class="ab icon-only" id="btnTheme" type="button" title="Theme: follows your system" aria-label="Theme: follows your system"><svg class="i sm"><use href="#i-theme-auto"/></svg></button>
       <div class="menu-wrap">
         <button class="ab icon-only" id="btnHelp" aria-haspopup="menu" aria-expanded="false" title="Help, feedback and credits" aria-label="Help"><svg class="i sm"><use href="#i-help"/></svg></button>
         <div class="menu" id="helpMenu" role="menu" hidden>
           <button role="menuitem" data-act="about">About Croquis <span class="ext"></span></button>
           <button role="menuitem" data-act="keys">Keyboard shortcuts <span class="ext"></span></button>
+          <button role="menuitem" data-act="helptexts" id="miHelpTexts">Hide tutorial texts <span class="ext"></span></button>
           <button role="menuitem" data-act="feature">Request a feature <span class="ext">GitHub</span></button>
           <button role="menuitem" data-act="design">Suggest a design improvement <span class="ext">GitHub</span></button>
           <button role="menuitem" data-act="bug">Report a bug <span class="ext">GitHub</span></button>
@@ -594,7 +638,6 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
     <input type="file" id="pictureInput" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/svg+xml" hidden>
   </header>
 
-  <div class="doctabs band" id="docTabs" role="tablist" aria-label="Open drawings"></div>
   <div class="viewbar band" id="viewBar" hidden>
     <svg class="i sm" aria-hidden="true"><use href="#i-eye"/></svg>
     <span class="vb-name" id="vbName"></span>
@@ -604,136 +647,27 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
     <button class="btn primary" type="button" id="vbEdit"><svg class="i sm"><use href="#i-new"/></svg>Edit a copy</button>
   </div>
 
-  <nav class="ribbon band" aria-label="Tools">
-    <div class="ribbon-scroll">
-    <div class="ribbon-in" id="paneSketch" role="tabpanel" aria-labelledby="tabSketch">
-      <div class="grp only-narrow">
-        <div class="grp-btns"><button class="tb" data-act="panel" title="Show the properties panel"><svg class="i"><use href="#i-panel"/></svg>Properties</button></div>
-        <div class="grp-label">Panel</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" data-tool="select" title="Select and drag (Esc)"><svg class="i"><use href="#i-select"/></svg>Select</button>
-        </div>
-        <div class="grp-label">Pick</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" data-tool="line" title="Line (L)"><svg class="i"><use href="#i-line"/></svg>Line</button>
-          <button class="tb" data-tool="centerline" title="Centerline (Shift+L)"><svg class="i"><use href="#i-centerline"/></svg>Centerline</button>
-          <button class="tb" data-tool="rect" title="Rectangle (R)"><svg class="i"><use href="#i-rect"/></svg>Rectangle</button>
-          <button class="tb" data-tool="circle" title="Circle (C)"><svg class="i"><use href="#i-circle"/></svg>Circle</button>
-          <button class="tb" data-tool="arc" title="Arc (A)"><svg class="i"><use href="#i-arc"/></svg>Arc</button>
-          <button class="tb" data-tool="slot" title="Straight slot"><svg class="i"><use href="#i-slot"/></svg>Slot</button>
-          <button class="tb" data-tool="polygon" title="Polygon"><svg class="i"><use href="#i-polygon"/></svg>Polygon</button>
-          <button class="tb" data-tool="point" title="Point (P)"><svg class="i"><use href="#i-point"/></svg>Point</button>
-        </div>
-        <div class="grp-label">Sketch</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" data-tool="dim" title="Smart Dimension (D)"><svg class="i"><use href="#i-dim"/></svg>Smart Dimension</button>
-          <button class="tb" id="btnAddRel" title="Add Relation: select entities, then pick a relation"><svg class="i"><use href="#i-relation"/></svg>Add Relation</button>
-          <button class="tb" id="btnLink" title="Link Values: select two or more dimensions to give them one shared value"><svg class="i"><use href="#i-link"/></svg>Link Values</button>
-          <button class="tb" id="btnEq" title="Equations and global variables"><svg class="i"><use href="#i-sigma"/></svg>Equations</button>
-        </div>
-        <div class="grp-label">Constrain</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" data-tool="fillet" title="Sketch Fillet (E)"><svg class="i"><use href="#i-fillet"/></svg>Fillet</button>
-          <button class="tb" data-tool="trim" title="Trim to closest (T)"><svg class="i"><use href="#i-trim"/></svg>Trim</button>
-          <button class="tb" data-tool="mirror" title="Mirror Entities (M)"><svg class="i"><use href="#i-mirror"/></svg>Mirror</button>
-          <button class="tb" data-tool="offset" title="Offset Entities (O): copy lines, arcs and circles at a distance"><svg class="i"><use href="#i-offset"/></svg>Offset</button>
-          <button class="tb" id="btnConstruct" title="Toggle construction geometry on the selection (Q)"><svg class="i"><use href="#i-construct"/></svg>Construction</button>
-          <button class="tb" id="btnDelete" title="Delete selection (Del)"><svg class="i"><use href="#i-trash"/></svg>Delete</button>
-        </div>
-        <div class="grp-label">Modify</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" id="btnGroup" title="Group the selection (Ctrl+G)"><svg class="i"><use href="#i-group"/></svg>Group</button>
-          <button class="tb" data-act="hide" title="Hide or show the selected groups, geometry and dimensions (H). Shift+H shows everything."><svg class="i"><use href="#i-hide"/></svg>Hide/Show</button>
-        </div>
-        <div class="grp-label">Organize</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" data-tool="sheet" title="Drawing sheet: paper format (A4 to A0), scale and title block"><svg class="i"><use href="#i-sheet"/></svg>Sheet</button>
-          <button class="tb" data-act="picture" title="Insert a picture (photo or scan of a sketch) to trace over. You can also paste or drop an image."><svg class="i"><use href="#i-picture"/></svg>Picture</button>
-        </div>
-        <div class="grp-label">Drawing</div>
-      </div>
-    </div>
-    <div class="ribbon-in" id="paneNotes" role="tabpanel" aria-labelledby="tabNotes" hidden>
-      <div class="grp only-narrow">
-        <div class="grp-btns"><button class="tb" data-act="panel" title="Show the properties panel"><svg class="i"><use href="#i-panel"/></svg>Properties</button></div>
-        <div class="grp-label">Panel</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" data-tool="select" title="Select and drag (Esc)"><svg class="i"><use href="#i-select"/></svg>Select</button>
-        </div>
-        <div class="grp-label">Pick</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" data-tool="ntext" title="Text note (N): click to place, or drag from a point to add a leader"><svg class="i"><use href="#i-text"/></svg>Text</button>
-        </div>
-        <div class="grp-label">Annotate</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" data-tool="nforce" title="Force arrow: click the point it acts on, then its direction"><svg class="i"><use href="#i-force"/></svg>Force</button>
-          <button class="tb" data-tool="nmoment" title="Torque or moment: click the center, then where the arrowhead goes"><svg class="i"><use href="#i-torque"/></svg>Torque</button>
-          <button class="tb" data-tool="nload" title="Distributed load: click the start, the end, then the intensity"><svg class="i"><use href="#i-load"/></svg>Distributed</button>
-        </div>
-        <div class="grp-label">Loads</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" data-tool="nsupport" title="Support: fixed, pinned or roller"><svg class="i"><use href="#i-support"/></svg>Support</button>
-          <button class="tb" data-tool="nspring" title="Spring between two points"><svg class="i"><use href="#i-spring"/></svg>Spring</button>
-          <button class="tb" data-tool="ndamper" title="Damper between two points"><svg class="i"><use href="#i-damper"/></svg>Damper</button>
-          <button class="tb" data-tool="nframe" title="Coordinate frame"><svg class="i"><use href="#i-frame"/></svg>Frame</button>
-          <button class="tb" data-tool="nmass" title="Center of mass"><svg class="i"><use href="#i-mass"/></svg>Mass</button>
-        </div>
-        <div class="grp-label">Mechanics</div>
-      </div>
-      <div class="grp">
-        <div class="grp-btns">
-          <button class="tb" data-act="layers" title="Note layers: show, hide, lock and choose where new notes go"><svg class="i"><use href="#i-layers"/></svg>Layers</button>
-          <button class="tb" data-act="hide" title="Hide or show the selection (H). Shift+H shows everything."><svg class="i"><use href="#i-hide"/></svg>Hide/Show</button>
-        </div>
-        <div class="grp-label">Organize</div>
-      </div>
-    </div>
-    </div>
-    <div class="ribbon-tabs" role="tablist" aria-label="Toolbars">
-      <button class="rtab" role="tab" id="tabSketch" aria-selected="true" aria-controls="paneSketch" data-tab="sketch">Sketch</button>
-      <button class="rtab" role="tab" id="tabNotes" aria-selected="false" aria-controls="paneNotes" data-tab="notes">Notes</button>
-    </div>
-  </nav>
 
   <main class="main band">
-    <aside class="pm" id="pm" aria-label="PropertyManager">
-      <div class="pm-head">
-        <svg class="i sm" id="pmIcon"><use href="#i-select"/></svg>
-        <h2 id="pmTitle">Sketch</h2>
+    <aside class="pm" id="pm" aria-label="Properties and Browser">
+      <div class="ptabs" role="tablist" aria-label="Panel">
+        <button class="ptab" type="button" role="tab" id="ptabProps" aria-selected="true" aria-controls="pviewProps" data-ptab="props"><svg class="i sm" aria-hidden="true"><use href="#i-panel"/></svg>Properties</button>
+        <button class="ptab" type="button" role="tab" id="ptabBrowser" aria-selected="false" aria-controls="pviewBrowser" data-ptab="browser" title="Groups, note layers, variables and pictures"><svg class="i sm" aria-hidden="true"><use href="#i-side"/></svg>Browser</button>
         <button class="ab icon-only pm-close" id="pmClose" aria-label="Close panel"><svg class="i sm"><use href="#i-x"/></svg></button>
       </div>
-      <div class="pm-body" id="pmBody"></div>
+      <div class="pview" id="pviewProps" role="tabpanel" aria-labelledby="ptabProps">
+        <div class="pm-head">
+          <svg class="i sm" id="pmIcon"><use href="#i-select"/></svg>
+          <h2 id="pmTitle">Sketch</h2>
+        </div>
+        <div class="pm-body" id="pmBody"></div>
+      </div>
+      <div class="pview" id="pviewBrowser" role="tabpanel" aria-labelledby="ptabBrowser" hidden>
+        <div class="side-body" id="sideBody"></div>
+      </div>
     </aside>
     <section class="stage" id="stage">
       <canvas id="cv" tabindex="0" aria-label="Sketch canvas"></canvas>
-      <div class="view-hud" id="viewHud">
-        <span class="zoom" id="zoomLbl"></span>
-        <button id="btnFit" title="Zoom to fit (F)"><svg class="i sm"><use href="#i-fit"/></svg><span class="lbl">Fit</span></button>
-        <button id="btnRel" aria-pressed="true" title="Show sketch relations"><svg class="i sm"><use href="#i-eye"/></svg><span class="lbl">Relations</span></button>
-        <button id="btnDims" aria-pressed="true" title="Show dimensions"><svg class="i sm"><use href="#i-dim"/></svg><span class="lbl">Dimensions</span></button>
-        <button id="btnSnap" aria-pressed="false" title="Snap to grid (G)"><svg class="i sm"><use href="#i-grid"/></svg><span class="lbl">Grid snap</span></button>
-        <button data-act="side" id="btnSide" aria-pressed="false" title="Browser: groups, note layers and variables"><svg class="i sm"><use href="#i-side"/></svg><span class="lbl">Browser</span></button>
-      </div>
       <textarea id="noteEd" class="note-ed" rows="1" spellcheck="true" aria-label="Note text" hidden></textarea>
       <div class="modify" id="modify" hidden>
         <div class="modify-head"><span id="modTitle">Modify</span><span class="unit" id="modUnit">mm</span></div>
@@ -748,26 +682,130 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
       <div class="ctx" id="ctx" role="menu" hidden></div>
       <div class="toast" id="toast" role="status" hidden></div>
     </section>
-    <aside class="side" id="side" aria-label="Browser: groups, note layers and variables">
-      <div class="side-head">
-        <svg class="i sm"><use href="#i-side"/></svg>
-        <h2>Browser</h2>
-        <button class="ab icon-only" data-act="side" aria-label="Close the browser"><svg class="i sm"><use href="#i-x"/></svg></button>
+    <nav class="ribbon" aria-label="Tools">
+      <div class="ribbon-scroll">
+      <div class="ribbon-in" id="paneSketch" role="tabpanel" aria-labelledby="tabSketch">
+        <div class="grp only-narrow">
+          <div class="grp-btns"><button class="tb" data-act="panel" title="Show the properties panel"><svg class="i"><use href="#i-panel"/></svg>Properties</button></div>
+          <div class="grp-label">Panel</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" data-tool="select" title="Select and drag (Esc)"><svg class="i"><use href="#i-select"/></svg>Select</button>
+          </div>
+          <div class="grp-label">Pick</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" data-tool="line" title="Line (L)"><svg class="i"><use href="#i-line"/></svg>Line</button>
+            <button class="tb" data-tool="centerline" title="Centerline (Shift+L)"><svg class="i"><use href="#i-centerline"/></svg>Centerline</button>
+            <button class="tb" data-tool="rect" title="Rectangle (R)"><svg class="i"><use href="#i-rect"/></svg>Rectangle</button>
+            <button class="tb" data-tool="circle" title="Circle (C)"><svg class="i"><use href="#i-circle"/></svg>Circle</button>
+            <button class="tb" data-tool="arc" title="Arc (A)"><svg class="i"><use href="#i-arc"/></svg>Arc</button>
+            <button class="tb" data-tool="slot" title="Straight slot"><svg class="i"><use href="#i-slot"/></svg>Slot</button>
+            <button class="tb" data-tool="polygon" title="Polygon"><svg class="i"><use href="#i-polygon"/></svg>Polygon</button>
+            <button class="tb" data-tool="point" title="Point (P)"><svg class="i"><use href="#i-point"/></svg>Point</button>
+          </div>
+          <div class="grp-label">Sketch</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" data-tool="dim" title="Smart Dimension (D)"><svg class="i"><use href="#i-dim"/></svg>Smart Dimension</button>
+            <button class="tb" id="btnAddRel" title="Add Relation: select entities, then pick a relation"><svg class="i"><use href="#i-relation"/></svg>Add Relation</button>
+            <button class="tb" id="btnLink" title="Link Values: select two or more dimensions to give them one shared value"><svg class="i"><use href="#i-link"/></svg>Link Values</button>
+            <button class="tb" id="btnEq" title="Equations and global variables"><svg class="i"><use href="#i-sigma"/></svg>Equations</button>
+          </div>
+          <div class="grp-label">Constrain</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" data-tool="fillet" title="Sketch Fillet (E)"><svg class="i"><use href="#i-fillet"/></svg>Fillet</button>
+            <button class="tb" data-tool="trim" title="Trim to closest (T)"><svg class="i"><use href="#i-trim"/></svg>Trim</button>
+            <button class="tb" data-tool="mirror" title="Mirror Entities (M)"><svg class="i"><use href="#i-mirror"/></svg>Mirror</button>
+            <button class="tb" data-tool="offset" title="Offset Entities (O): copy lines, arcs and circles at a distance"><svg class="i"><use href="#i-offset"/></svg>Offset</button>
+            <button class="tb" id="btnConstruct" title="Toggle construction geometry on the selection (Q)"><svg class="i"><use href="#i-construct"/></svg>Construction</button>
+            <button class="tb" id="btnDelete" title="Delete selection (Del)"><svg class="i"><use href="#i-trash"/></svg>Delete</button>
+          </div>
+          <div class="grp-label">Modify</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" id="btnGroup" title="Group the selection (Ctrl+G)"><svg class="i"><use href="#i-group"/></svg>Group</button>
+            <button class="tb" data-act="hide" title="Hide or show the selected groups, geometry and dimensions (H). Shift+H shows everything."><svg class="i"><use href="#i-hide"/></svg>Hide/Show</button>
+          </div>
+          <div class="grp-label">Organize</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" data-tool="sheet" title="Drawing sheet: paper format (A4 to A0), scale and title block"><svg class="i"><use href="#i-sheet"/></svg>Sheet</button>
+            <button class="tb" data-act="picture" title="Insert a picture (photo or scan of a sketch) to trace over. You can also paste or drop an image."><svg class="i"><use href="#i-picture"/></svg>Picture</button>
+          </div>
+          <div class="grp-label">Drawing</div>
+        </div>
       </div>
-      <div class="side-body" id="sideBody"></div>
-    </aside>
+      <div class="ribbon-in" id="paneNotes" role="tabpanel" aria-labelledby="tabNotes" hidden>
+        <div class="grp only-narrow">
+          <div class="grp-btns"><button class="tb" data-act="panel" title="Show the properties panel"><svg class="i"><use href="#i-panel"/></svg>Properties</button></div>
+          <div class="grp-label">Panel</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" data-tool="select" title="Select and drag (Esc)"><svg class="i"><use href="#i-select"/></svg>Select</button>
+          </div>
+          <div class="grp-label">Pick</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" data-tool="ntext" title="Text note (N): click to place, or drag from a point to add a leader"><svg class="i"><use href="#i-text"/></svg>Text</button>
+          </div>
+          <div class="grp-label">Annotate</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" data-tool="nforce" title="Force arrow: click the point it acts on, then its direction"><svg class="i"><use href="#i-force"/></svg>Force</button>
+            <button class="tb" data-tool="nmoment" title="Torque or moment: click the center, then where the arrowhead goes"><svg class="i"><use href="#i-torque"/></svg>Torque</button>
+            <button class="tb" data-tool="nload" title="Distributed load: click the start, the end, then the intensity"><svg class="i"><use href="#i-load"/></svg>Distributed</button>
+          </div>
+          <div class="grp-label">Loads</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" data-tool="nsupport" title="Support: fixed, pinned or roller"><svg class="i"><use href="#i-support"/></svg>Support</button>
+            <button class="tb" data-tool="nspring" title="Spring between two points"><svg class="i"><use href="#i-spring"/></svg>Spring</button>
+            <button class="tb" data-tool="ndamper" title="Damper between two points"><svg class="i"><use href="#i-damper"/></svg>Damper</button>
+            <button class="tb" data-tool="nframe" title="Coordinate frame"><svg class="i"><use href="#i-frame"/></svg>Frame</button>
+            <button class="tb" data-tool="nmass" title="Center of mass"><svg class="i"><use href="#i-mass"/></svg>Mass</button>
+          </div>
+          <div class="grp-label">Mechanics</div>
+        </div>
+        <div class="grp">
+          <div class="grp-btns">
+            <button class="tb" data-act="layers" title="Note layers: show, hide, lock and choose where new notes go"><svg class="i"><use href="#i-layers"/></svg>Layers</button>
+            <button class="tb" data-act="hide" title="Hide or show the selection (H). Shift+H shows everything."><svg class="i"><use href="#i-hide"/></svg>Hide/Show</button>
+          </div>
+          <div class="grp-label">Organize</div>
+        </div>
+      </div>
+      </div>
+      <div class="ribbon-tabs" role="tablist" aria-label="Toolbars">
+        <button class="rtab" role="tab" id="tabSketch" aria-selected="true" aria-controls="paneSketch" data-tab="sketch">Sketch</button>
+        <button class="rtab" role="tab" id="tabNotes" aria-selected="false" aria-controls="paneNotes" data-tab="notes">Notes</button>
+      </div>
+    </nav>
   </main>
   <div class="pop" id="pop" role="dialog" aria-label="Choose a color" hidden></div>
 
   <footer class="statusbar band">
-    <span id="coords">X 0.00  Y 0.00</span>
-    <span id="defState" class="state under">Under Defined</span>
-    <span id="dofInfo"></span>
+    <div class="doctabs" id="docTabs" role="tablist" aria-label="Open drawings"></div>
     <span id="selInfo"></span>
-    <span class="grow"></span>
-    <span id="storeInfo"></span>
     <span id="sheetInfo"></span>
-    <span>MMGS · mm</span>
+    <button class="fbtn funits" id="btnUnits" type="button" title="Units of this drawing: click to switch between millimetres and inches">mm</button>
+    <span class="fview" role="group" aria-label="View">
+      <button class="fbtn" id="btnGrid" type="button" aria-pressed="true" title="Show or hide the grid" aria-label="Grid"><svg class="i sm"><use href="#i-gridlines"/></svg></button>
+      <button class="fbtn" id="btnSnap" type="button" aria-pressed="false" title="Snap to grid (G)" aria-label="Snap to grid"><svg class="i sm"><use href="#i-grid"/></svg></button>
+      <button class="fbtn" id="btnFit" type="button" title="Zoom to fit (F)" aria-label="Zoom to fit"><svg class="i sm"><use href="#i-fit"/></svg></button>
+      <span class="zoom" id="zoomLbl" title="Zoom: screen pixels per millimetre"></span>
+    </span>
     <button class="credit" type="button" id="btnCredit" title="About Croquis, credits and license">Croquis · Stépane Binon</button>
   </footer>
   <a class="embed-open" id="embedOpen" target="_blank" rel="noopener" hidden><svg class="i sm" aria-hidden="true"><use href="#i-brand"/></svg>Open in Croquis</a>
@@ -872,6 +910,7 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
       this.activeLayer = 0;
       this.sheet = null;
       this.pictures = new Map();
+      this.units = 'mm';
       this.nextId = 1;
       this.counters = defaultCounters();
       this.originId = 0;
@@ -1174,7 +1213,7 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
       const notes = [...this.notes.values()].map((n) => JSON.parse(JSON.stringify(n)));
       const vars = [...this.vars.values()].map((v) => Object.assign({ name: v.name, expr: v.expr }, v.link ? { link: true } : {}));
       const out = {
-        format: 'croquis', version: 2, units: 'mm', nextId: this.nextId, counters: Object.assign({}, this.counters),
+        format: 'croquis', version: 2, units: this.units === 'in' ? 'in' : 'mm', nextId: this.nextId, counters: Object.assign({}, this.counters),
         entities, constraints, groups, layers, notes, vars, activeLayer: this.activeLayer,
       };
       if (this.sheet) out.sheet = JSON.parse(JSON.stringify(this.sheet));
@@ -1261,6 +1300,7 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
         if (n) sk.notes.set(n.id, n);
       }
       sk.sheet = cleanSheet(j.sheet);
+      sk.units = j.units === 'in' ? 'in' : 'mm';
       for (const o of arr(j.pictures)) {
         const p = cleanPicture(o);
         if (p) sk.pictures.set(p.id, p);
@@ -1338,6 +1378,8 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
     if (Number.isFinite(+s.width) && +s.width > 0) o.width = clamp(+s.width, 0.3, 12);
     if (MARKER_KEYS.includes(s.marker)) o.marker = s.marker;
     if (Number.isFinite(+s.size) && +s.size > 0) o.size = clamp(+s.size, 0.5, 20);
+    const fill = cleanColor(s.fill);
+    if (fill) { o.fill = fill; if (Number.isFinite(+s.fillOp)) o.fillOp = clamp(+s.fillOp, 0.05, 1); }
     return Object.keys(o).length ? o : null;
   }
   function cleanAnchor(sk, a) {
@@ -3418,14 +3460,12 @@ const K = window.SketchCore;
 const $ = (id) => document.getElementById(id);
 const hyp = K.hyp, TAU = K.TAU, DEG = K.DEG, clamp = K.clamp;
 const SVGNS = 'http://www.w3.org/2000/svg';
-const LS_DRAFT = 'croquis:draft:v1';
 const LS_LIB = 'croquis:library:v1';
 const LS_PREFS = 'croquis:prefs:v1';
 const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } };
 const FONT_NUM = '"B612 Mono", ui-monospace, Menlo, Consolas, monospace';
 const EMPTY = new Set();
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* ---------- formatting & expressions ---------- */
 function fmt(v, dp = 2) {
@@ -3435,13 +3475,29 @@ function fmt(v, dp = 2) {
   if (s === '-0') s = '0';
   return s;
 }
+/* Lengths are stored in millimetres; drawings shown in inches convert
+   on the way in and out. */
+const unitK = () => (app.sk && app.sk.units === 'in' ? 25.4 : 1);
+const unitName = () => (unitK() === 1 ? 'mm' : 'in');
+const lenDp = () => (unitK() === 1 ? 2 : 3);
+const fmtL = (v, dp) => fmt(v / unitK(), dp === undefined ? lenDp() : dp);
+const dimK = (c) => (c.type === 'angle' ? 1 : unitK());
+/* A typed length: a plain number is in the drawing unit; an explicit
+   unit (25 mm, 2in, 1") or a name (D1/2) is already in millimetres. */
+function entryToMM(str, v) {
+  if (unitK() === 1 || v === null || v === undefined) return v;
+  const t = String(str);
+  if (/\d\s*(mm|cm|m|in)\b|"/i.test(t)) return v;
+  if (/[A-Za-z_]/.test(t.replace(/\b(pi|sqrt|abs|a?sin|a?cos|a?tan|atan2|min|max|round|floor|ceil|exp|ln|log|e)\b/gi, ''))) return v;
+  return v * unitK();
+}
 function fmtDim(c) {
   const v = c.driven ? K.measureDim(app.sk, c) : c.value;
   let s;
   if (c.type === 'angle') s = fmt(Math.abs(v), 2) + '°';
-  else if (c.type === 'diameter') s = '⌀' + fmt(Math.abs(v));
-  else if (c.type === 'radius') s = 'R' + fmt(Math.abs(v));
-  else s = fmt(Math.abs(v));
+  else if (c.type === 'diameter') s = '⌀' + fmtL(Math.abs(v));
+  else if (c.type === 'radius') s = 'R' + fmtL(Math.abs(v));
+  else s = fmtL(Math.abs(v));
   if (c.driven) s = '(' + s + ')';
   return app.showNames && c.name ? c.name + ' = ' + s : s;
 }
@@ -3735,7 +3791,7 @@ function zoomFit() {
   app.V = { cx: (box.x0 + box.x1) / 2, cy: (box.y0 + box.y1) / 2, s };
   requestRender();
 }
-function fmtZoom() { return fmt(app.V.s, app.V.s < 10 ? 2 : 1) + ' px/mm'; }
+function fmtZoom() { const v = app.V.s * unitK(); return fmt(v, v < 10 ? 2 : 1) + ' px/' + unitName(); }
 
 /* ---------- render loop ---------- */
 let rq = false;
@@ -3777,20 +3833,21 @@ function drawScene(R) {
   drawPictures(R);
   if (!R.exp) drawGrid(R);
   drawSheet(R);
-  if (!R.exp) drawOrigin(R);
+  if (!R.exp && app.showOrigin) drawOrigin(R);
   drawEntities(R);
   if (app.showDims) drawDims(R);
   drawNotes(R);
   if (!R.exp && app.showRel) drawGlyphs(R);
 }
 function drawGrid(R) {
-  const { ctx, W, H, s } = R;
+  const { ctx, W, H } = R, uk = unitK(), s = R.s * uk;
   let step = Math.pow(10, Math.floor(Math.log10(10 / s)));
   let lead = 10;
   for (const m of [1, 2, 5]) if (step * m * s >= 10) { lead = m; break; }
-  step *= lead;
+  step *= lead * uk;
   if (lead === 10) lead = 1;
   const ratio = lead === 1 ? 10 : lead === 2 ? 5 : 2;
+  if (!app.showGrid) { app.gridStep = step; return; }
   const [x0, y1] = R.toW(0, 0), [x1, y0] = R.toW(W, H);
   const pass = (major) => {
     ctx.beginPath();
@@ -3855,6 +3912,7 @@ function mirrorRole(id) {
   return app.ts.ents && app.ts.ents.includes(id) ? 1 : 0;
 }
 function drawEntities(R) {
+  drawFills(R);
   const sk = app.sk, ctx = R.ctx;
   const curves = [];
   for (const e of sk.ents.values()) if (e.type !== 'point' && sk.entVisible(e.id)) curves.push(e);
@@ -4522,7 +4580,7 @@ function lineTool(construction) {
       const L = hyp(ts.cur.x - ts.a.x, ts.cur.y - ts.a.y);
       let ang = Math.atan2(ts.cur.y - ts.a.y, ts.cur.x - ts.a.x) / DEG;
       if (ang < 0) ang += 360;
-      app.hud = 'L ' + fmt(L) + '   ∠ ' + fmt(ang, 1) + '°';
+      app.hud = 'L ' + fmtL(L) + '   ∠ ' + fmt(ang, 1) + '°';
       requestRender();
     },
     up(ev) {
@@ -4612,8 +4670,8 @@ const RectTool = clickEngine({
   },
   hud(pts, cur) {
     const c = RectTool.spec.corners(pts, cur);
-    if (!c) return 'L ' + fmt(hyp(cur.x - pts[0].x, cur.y - pts[0].y));
-    return fmt(hyp(c[1].x - c[0].x, c[1].y - c[0].y)) + ' × ' + fmt(hyp(c[2].x - c[1].x, c[2].y - c[1].y));
+    if (!c) return 'L ' + fmtL(hyp(cur.x - pts[0].x, cur.y - pts[0].y));
+    return fmtL(hyp(c[1].x - c[0].x, c[1].y - c[0].y)) + ' × ' + fmtL(hyp(c[2].x - c[1].x, c[2].y - c[1].y));
   },
   preview(R, pts, cur) {
     const c = RectTool.spec.corners(pts, cur);
@@ -4657,9 +4715,9 @@ const CircleTool = clickEngine({
     return true;
   },
   hud(pts, cur) {
-    if (app.opts.circle === 'center') return 'R ' + fmt(hyp(cur.x - pts[0].x, cur.y - pts[0].y));
+    if (app.opts.circle === 'center') return 'R ' + fmtL(hyp(cur.x - pts[0].x, cur.y - pts[0].y));
     const cc = pts.length === 2 ? K.circumcenter(pts[0], pts[1], cur) : null;
-    return cc ? 'R ' + fmt(hyp(cur.x - cc.x, cur.y - cc.y)) : null;
+    return cc ? 'R ' + fmtL(hyp(cur.x - cc.x, cur.y - cc.y)) : null;
   },
   preview(R, pts, cur) {
     const dash = app.opts.construction ? [9, 3, 2, 3] : null;
@@ -4758,12 +4816,12 @@ const ArcTool = clickEngine({
     const t = app.opts.arc;
     if (t === 'center') {
       const r = hyp(pts[pts.length === 1 ? 0 : 1].x - pts[0].x, pts[pts.length === 1 ? 0 : 1].y - pts[0].y);
-      if (pts.length === 1) return 'R ' + fmt(hyp(cur.x - pts[0].x, cur.y - pts[0].y));
-      return 'R ' + fmt(r) + '   ∠ ' + fmt(Math.abs((ts.acc || 0) / DEG), 1) + '°';
+      if (pts.length === 1) return 'R ' + fmtL(hyp(cur.x - pts[0].x, cur.y - pts[0].y));
+      return 'R ' + fmtL(r) + '   ∠ ' + fmt(Math.abs((ts.acc || 0) / DEG), 1) + '°';
     }
-    if (t === 'tangent') { const T = tangentFrom(pts[0].snap.id), g = T && tangentArcGeom(T, cur); return g ? 'R ' + fmt(g.r) + '   ∠ ' + fmt(Math.abs(g.sweep / DEG), 1) + '°' : null; }
-    if (pts.length === 2) { const g = threePtArc(pts[0], pts[1], cur); return g ? 'R ' + fmt(g.r) : null; }
-    return 'L ' + fmt(hyp(cur.x - pts[0].x, cur.y - pts[0].y));
+    if (t === 'tangent') { const T = tangentFrom(pts[0].snap.id), g = T && tangentArcGeom(T, cur); return g ? 'R ' + fmtL(g.r) + '   ∠ ' + fmt(Math.abs(g.sweep / DEG), 1) + '°' : null; }
+    if (pts.length === 2) { const g = threePtArc(pts[0], pts[1], cur); return g ? 'R ' + fmtL(g.r) : null; }
+    return 'L ' + fmtL(hyp(cur.x - pts[0].x, cur.y - pts[0].y));
   },
   preview(R, pts, cur, ts) {
     const t = app.opts.arc, dash = app.opts.construction ? [9, 3, 2, 3] : null;
@@ -4843,7 +4901,7 @@ const SlotTool = clickEngine({
     if (pts.length === 1) return farEnough(pts[0], p, 6);
     return slotWidth(pts, p) * app.V.s > 3;
   },
-  hud(pts, cur) { return pts.length === 1 ? 'L ' + fmt(hyp(cur.x - pts[0].x, cur.y - pts[0].y)) : 'W ' + fmt(slotWidth(pts, cur)); },
+  hud(pts, cur) { return pts.length === 1 ? 'L ' + fmtL(hyp(cur.x - pts[0].x, cur.y - pts[0].y)) : 'W ' + fmtL(slotWidth(pts, cur)); },
   preview(R, pts, cur) {
     if (pts.length === 1) { pvLine(R, pts[0], cur, [6, 3, 2, 3]); return; }
     pvLine(R, pts[0], pts[1], [6, 3, 2, 3]);
@@ -4865,7 +4923,7 @@ const PolygonTool = clickEngine({
   count: () => 2,
   infer(i, ev) { return inferAt(ev.sx, ev.sy, { noCurve: i > 0 }); },
   valid(pts, p) { return farEnough(pts[0], p, 6); },
-  hud(pts, cur) { const n = app.opts.polySides, R = hyp(cur.x - pts[0].x, cur.y - pts[0].y); return 'n ' + n + '   ⌀ ' + fmt(2 * (app.opts.polyInscribed ? R * Math.cos(Math.PI / n) : R)); },
+  hud(pts, cur) { const n = app.opts.polySides, R = hyp(cur.x - pts[0].x, cur.y - pts[0].y); return 'n ' + n + '   ⌀ ' + fmtL(2 * (app.opts.polyInscribed ? R * Math.cos(Math.PI / n) : R)); },
   preview(R, pts, cur) {
     const c = pts[0], n = app.opts.polySides, rad = hyp(cur.x - c.x, cur.y - c.y), a0 = Math.atan2(cur.y - c.y, cur.x - c.x);
     const vs = [];
@@ -4920,7 +4978,7 @@ const FilletTool = {
     const ts = app.ts;
     ts.corner = findCorner(ev);
     ts.pv = ts.corner ? K.filletPreview(app.sk, ts.corner.x, ts.corner.y, app.opts.filletR) : null;
-    app.hud = ts.pv ? (ts.pv.ok ? 'R ' + fmt(app.opts.filletR) : ts.pv.msg) : null;
+    app.hud = ts.pv ? (ts.pv.ok ? 'R ' + fmtL(app.opts.filletR) : ts.pv.msg) : null;
     requestRender();
   },
   up(ev) {
@@ -5420,6 +5478,8 @@ function glyphIco(kind) {
   return el('span', { class: 'glyph-ico' }, s);
 }
 const sec = (title, ...kids) => el('div', { class: 'sec' }, title ? el('h3', { text: title }) : null, ...kids);
+/* A section of tutorial text, hidden when tutorial texts are switched off. */
+const helpSec = (title, ...kids) => { const s = sec(title, ...kids); s.classList.add('help'); return s; };
 function checkbox(id, label, checked, onChange) {
   const inp = el('input', { type: 'checkbox', id });
   inp.checked = !!checked;
@@ -5431,12 +5491,14 @@ function segmented(id, items, value, onPick) {
     items.map(([v, label]) => el('button', { type: 'button', 'aria-pressed': String(v === value), text: label, onclick: () => onPick(v) })));
 }
 function numField(id, label, value, unit, disabled, onSet) {
+  const len = unit === 'mm', k = len ? unitK() : 1;
+  if (len) { unit = unitName(); value /= k; }
   const inp = el('input', { id, class: 'num', type: 'text', inputmode: 'decimal', autocomplete: 'off', spellcheck: 'false', disabled: !!disabled });
   inp.value = fmt(value, 4);
   let last = inp.value;
   const apply = () => {
     if (inp.value === last) return;
-    const v = evalExpr(inp.value);
+    const v = len ? entryToMM(inp.value, evalExpr(inp.value)) : evalExpr(inp.value);
     if (v === null) { inp.classList.add('bad'); return; }
     inp.classList.remove('bad');
     last = inp.value;
@@ -5501,6 +5563,7 @@ function setTool(name) {
   hideCtx();
   hidePop();
   if (name !== 'select') setTab(isNoteTool(name) ? 'notes' : 'sketch');
+  if (name !== 'select' && app.side) openSide(false);
   if (name === 'dim' && !app.showDims) { setShowDims(true); toast('Dimensions are shown again so you can see the new one.'); }
   app.tool = name;
   app.inf = null; app.hud = null; app.hover = null;
@@ -5760,7 +5823,7 @@ function pmTool(out) {
   if (name === 'offset') pmOffset(out);
   if (name === 'sheet') pmSheet(out);
   if (isNoteTool(name)) pmNoteTool(out, name);
-  out.push(sec('How to', el('p', { class: 'hint', text: hintFor(name) })));
+  out.push(helpSec('How to', el('p', { class: 'hint', text: hintFor(name) })));
   if (DRAW_TOOLS.includes(name)) out.push(sec('Options', checkbox('pmConstr', 'For construction', app.opts.construction, (v) => { app.opts.construction = v; savePrefs(); requestRender(); }),
     el('p', { class: 'hint', html: undefined }, 'Hold ', el('kbd', { text: 'Ctrl' }), ' while sketching to skip automatic relations.')));
   out.push(sec(null, el('div', { class: 'btn-row' }, el('button', { class: 'btn', type: 'button', text: 'Done', onclick: () => setTool('select') }))));
@@ -5785,21 +5848,21 @@ function pmSketch(out) {
       el('span', {}, el('i', { style: 'border-color:var(--under)' }), 'Under defined, free to drag'),
       el('span', {}, el('i', { style: 'border-color:var(--ink)' }), 'Fully defined'),
       el('span', {}, el('i', { style: 'border-color:var(--over)' }), 'Over defined, conflicting'))));
-  if (app.doc.example) out.push(sec('Example sketch', el('p', { class: 'hint', text: 'This motor plate is an example. Drag the blue slot, double-click a dimension to change it (the two fillets are linked), hide the holes from the Browser, or start your own with New.' })));
+  if (app.doc.example) out.push(helpSec('Example sketch', el('p', { class: 'hint', text: 'This motor plate is an example. Drag the blue slot, double-click a dimension to change it (the two fillets are linked), hide the holes from the Browser, or start your own with New.' })));
   const hid = hiddenSummary();
   if (hid.text) {
     out.push(sec('Hidden', el('p', { class: 'hint', text: hid.text }), el('div', { style: 'height:8px' }),
       el('div', { class: 'btn-row' }, el('button', { class: 'btn', type: 'button', onclick: showAllHidden }, svgUse('i-eye'), 'Show all (Shift+H)'))));
   }
   out.push(sec('Display',
-    checkbox('pmShowRel', 'Show relations', app.showRel, setShowRel),
-    checkbox('pmShowDims', 'Show dimensions', app.showDims, setShowDims),
     checkbox('pmShowNames', 'Show dimension names', app.showNames, (v) => { app.showNames = v; savePrefs(); requestRender(); }),
     checkbox('pmStatus', 'Status colors (ignore line colors)', app.colorMode === 'status', (v) => { app.colorMode = v ? 'status' : 'style'; savePrefs(); requestRender(); }),
-    checkbox('pmSnap', 'Snap to grid', app.snapGrid, setSnap)));
+    checkbox('pmOrigin', 'Show the origin and its axes', app.showOrigin, (v) => { app.showOrigin = v; savePrefs(); requestRender(); }),
+    checkbox('pmHelp', 'Show tutorial texts', app.showHelp, setShowHelp),
+    checkbox('pmScaleFirst', 'First dimension scales the whole sketch', app.opts.scaleFirst, (v) => { app.opts.scaleFirst = v; savePrefs(); })));
   const tip = (b, ...rest) => el('li', {}, el('b', { text: b + ' ' }), ...rest);
   const kbd = (t) => el('kbd', { text: t });
-  out.push(sec('Working like SolidWorks', el('ul', { class: 'tips' },
+  out.push(helpSec('Quick tips', el('ul', { class: 'tips' },
     tip('Draw.', 'Relations are added as you snap: watch the yellow badges. Hold ', kbd('Ctrl'), ' to sketch without them.'),
     tip('Relate.', 'Select entities with ', kbd('Ctrl'), '+click or a box, then pick a relation here.'),
     tip('Dimension.', 'Press ', kbd('D'), ', pick entities, click to place, type the value. Type ', kbd('=D1/2'), ' to drive it by an equation.'),
@@ -5896,7 +5959,7 @@ function schedulePMValues() {
     if (!e || !app.pmFieldMap) return;
     for (const [fid, field] of app.pmFieldMap) {
       const inp = document.getElementById(fid);
-      if (inp && document.activeElement !== inp) inp.value = fmt(paramValue(e, field), 4);
+      if (inp && document.activeElement !== inp) inp.value = fmt(paramValue(e, field) / (field === 'ang' ? 1 : unitK()), 4);
     }
   }, 60);
 }
@@ -5936,9 +5999,12 @@ function applyDimEntry(c, raw) {
   else {
     const res = evalWithNames(raw);
     if (res.error || res.value === undefined) return res.error || 'Type a number, an expression such as 25.4*2, or =D1/2.';
+    if (c.type !== 'angle') res.value = entryToMM(raw, res.value);
     const bad = K.dimValueError(c, res.value);
     if (bad) return bad;
     if (Math.abs(res.value - c.value) < 1e-12 && !c.expr) return null;
+    const kFirst = firstDimScale(c, res.value);
+    if (kFirst) { commit(before); firstDimToast(kFirst); return null; }
     r = K.setDimValue(sk, c.id, res.value);
   }
   if (r.status !== 'ok') { refresh(); return r.msg || 'The sketch cannot reach this value with its other relations and dimensions.'; }
@@ -5965,13 +6031,13 @@ function unlinkDimsUI(ids) {
 }
 function pmDimension(out, c) {
   const sk = app.sk;
-  const unit = c.type === 'angle' ? '°' : 'mm';
+  const unit = c.type === 'angle' ? '°' : unitName();
   const kind = c.type === 'diameter' ? 'Diameter' : c.type === 'radius' ? 'Radius' : c.type === 'angle' ? 'Angle' : 'Distance';
   const ev = K.evaluateEquations(sk);
   const problem = c.name ? ev.errors.get(c.name.toLowerCase()) : null;
   const rows = [];
   rows.push(...fieldRow('pmDimName', 'Name', inputField('pmDimName', c.name, { text: true, label: 'Dimension name', onCommit: (v) => renameDimUI(c, v) })));
-  rows.push(...fieldRow('pmDimVal', kind, inputField('pmDimVal', fmt(c.driven ? K.measureDim(sk, c) : c.value, 4), {
+  rows.push(...fieldRow('pmDimVal', kind, inputField('pmDimVal', fmt((c.driven ? K.measureDim(sk, c) : c.value) / dimK(c), 4), {
     disabled: c.driven, label: kind,
     onCommit: (v) => { const e = applyDimEntry(c, v); if (e) { toast(e, 'err'); renderPM(); } },
   }), unit));
@@ -6071,6 +6137,7 @@ function applyStyle(items, patch) {
     for (const k of Object.keys(patch)) {
       if (k === 'dash' || k === 'width') { if (e.type === 'point') continue; }
       if ((k === 'marker' || k === 'size') && e.type !== 'point') continue;
+      if ((k === 'fill' || k === 'fillOp') && e.type === 'point') continue;
       if (patch[k] === null || patch[k] === undefined) delete st[k]; else st[k] = patch[k];
     }
     if (Object.keys(st).length) e.style = st; else delete e.style;
@@ -6102,7 +6169,8 @@ function pmStyle(out, items) {
     for (const [v, lab] of POINT_SIZES) gs.append(optBtn(document.createTextNode(lab), sz === v, 'Size ' + lab, () => applyStyle(pts, { size: v === 2.9 ? null : v })));
     kids.push(styleRow('Point size', gs));
   }
-  if (items.some((e) => e.style)) kids.push(el('div', { class: 'btn-row' }, el('button', { class: 'btn', type: 'button', text: 'Reset format', onclick: () => applyStyle(items, { color: null, dash: null, width: null, marker: null, size: null }) })));
+  if (curves.length) pmFill(kids, curves);
+  if (items.some((e) => e.style)) kids.push(el('div', { class: 'btn-row' }, el('button', { class: 'btn', type: 'button', text: 'Reset format', onclick: () => applyStyle(fillTargets(items), { color: null, dash: null, width: null, marker: null, size: null, fill: null, fillOp: null }) })));
   if (app.colorMode === 'status') kids.push(el('p', { class: 'note-line', text: 'Status colors are on under Display, so lines show their definition status instead of these colors.' }));
   out.push(sec('Line format', ...kids));
 }
@@ -6135,22 +6203,21 @@ function pmOrganize(out, keys) {
 function updateStatus() {
   const an = app.an;
   if (!an) return;
-  const chip = $('defState');
-  chip.className = 'state ' + an.status;
-  chip.textContent = an.status === 'full' ? 'Fully Defined' : an.status === 'over' ? 'Over Defined' : 'Under Defined';
-  $('dofInfo').textContent = an.status === 'over' ? (an.redundant.size + an.unsat.size) + ' conflicting' : an.dof + ' DOF';
+  updateUnitsUI();
   updateSheetInfo();
   const hid = hiddenSummary().count;
   $('selInfo').textContent = [app.sel.length ? app.sel.length + ' selected' : '', hid ? hid + ' hidden' : ''].filter(Boolean).join(' · ');
 }
-function setShowRel(v) { app.showRel = v; $('btnRel').setAttribute('aria-pressed', String(v)); savePrefs(); renderPM(); requestRender(); }
+const setPressed = (id, v) => { const b = $(id); if (b) b.setAttribute('aria-pressed', String(!!v)); };
+function setShowRel(v) { app.showRel = v; setPressed('btnRel', v); savePrefs(); renderPM(); renderSide(); requestRender(); }
 function setShowDims(v) {
   app.showDims = v;
-  $('btnDims').setAttribute('aria-pressed', String(v));
+  setPressed('btnDims', v);
   if (!v && app.modify) closeModify();
   savePrefs();
   pruneSel();
   renderPM();
+  renderSide();
   requestRender();
 }
 function setSnap(v) { app.snapGrid = v; $('btnSnap').setAttribute('aria-pressed', String(v)); savePrefs(); renderPM(); toast(v ? 'Snapping to the grid.' : 'Grid snap is off.'); }
@@ -6169,7 +6236,7 @@ function openModify(cid) {
   y = clamp(y, 8, Math.max(8, app.H - 150));
   m.style.left = x + 'px'; m.style.top = y + 'px';
   $('modTitle').textContent = (c.name ? c.name + ' · ' : '') + (K.DIM_INFO[c.type] || 'Modify');
-  $('modUnit').textContent = c.type === 'angle' ? 'degrees' : 'mm';
+  $('modUnit').textContent = c.type === 'angle' ? 'degrees' : unitName() === 'in' ? 'inches' : 'mm';
   $('modErr').hidden = true;
   const hint = $('modHint');
   const link = c.expr ? K.singleName(c.expr) : null;
@@ -6180,7 +6247,7 @@ function openModify(cid) {
   else hint.textContent = 'Type a value, or =D1/2 to drive it by an equation.';
   hint.hidden = false;
   const inp = $('modInput');
-  inp.value = c.expr ? '=' + c.expr : fmt(c.value, 6);
+  inp.value = c.expr ? '=' + c.expr : fmt(c.value / dimK(c), 6);
   inp.classList.remove('bad');
   app.modify = { cid, before: snapshot() };
   setSel([keyC(cid)]);
@@ -6204,9 +6271,12 @@ function applyModify() {
   else {
     const res = evalWithNames(raw);
     if (res.error || res.value === undefined) { err(res.error || 'Type a number, an expression such as 25.4*2, or =D1/2.'); return; }
+    if (c.type !== 'angle') res.value = entryToMM(raw, res.value);
     const bad = K.dimValueError(c, res.value);
     if (bad) { err(bad); return; }
     if (Math.abs(res.value - c.value) < 1e-12 && !c.expr) { closeModify(); return; }
+    const kFirst = firstDimScale(c, res.value);
+    if (kFirst) { closeModify(); commit(m.before); firstDimToast(kFirst); return; }
     r = K.setDimValue(app.sk, m.cid, res.value);
   }
   if (r.status !== 'ok') { refresh(); err(r.msg || 'The sketch cannot reach this value with its other relations and dimensions.'); return; }
@@ -6263,81 +6333,40 @@ function showCtx(ev) {
 
 /* ---- Croquis UI, part 4: storage, export/import, input wiring, startup ---- */
 
-/* ---------- storage: private per-person library, browser fallback ---------- */
+/* ---------- storage: a library of sketches kept in this browser ---------- */
 const store = {
-  db: null, uid: null, dl: null, ready: null,
-  framed: !!(window.claude && typeof window.claude.use === 'function'),
-  init() {
-    if (!this.ready) {
-      this.ready = (async () => {
-        if (!this.framed) return;
-        try {
-          const [db, user, dl] = await Promise.all([window.claude.use('db'), window.claude.use('user'), window.claude.use('downloads')]);
-          this.dl = dl || null;
-          if (db && user) { const id = await user.id(); if (id) { this.db = db; this.uid = id; } }
-        } catch (e) { /* keep the browser fallback */ }
-        updateStoreInfo();
-      })();
-    }
-    return this.ready;
-  },
-  get cloud() { return !!(this.db && this.uid); },
-  col() { return this.db.collection('data/users/' + this.uid); },
   localLib() { try { return JSON.parse(lsGet(LS_LIB) || '{}') || {}; } catch (e) { return {}; } },
   async list() {
-    await this.init();
     const out = [];
-    if (this.cloud) {
-      try {
-        const snap = await this.col().orderBy('updatedAt', 'desc').limit(300).get();
-        for (const d of snap.docs) {
-          const v = d.data();
-          if (v && v.sketch) out.push({ id: d.id, name: String(v.name || 'Untitled sketch'), updatedAt: +v.updatedAt || 0, sketch: v.sketch, where: 'cloud' });
-        }
-      } catch (e) { /* show what is local */ }
-    }
     const lib = this.localLib();
-    for (const id in lib) { const v = lib[id]; if (v && v.sketch && !out.some((o) => o.id === id)) out.push({ id, name: String(v.name || 'Untitled sketch'), updatedAt: +v.updatedAt || 0, sketch: v.sketch, where: 'local' }); }
+    for (const id in lib) { const v = lib[id]; if (v && v.sketch) out.push({ id, name: String(v.name || 'Untitled sketch'), updatedAt: +v.updatedAt || 0, sketch: v.sketch, where: 'local' }); }
     out.sort((a, b) => b.updatedAt - a.updatedAt);
     return out;
   },
   async save(doc) {
-    await this.init();
-    const body = { app: 'croquis', name: doc.name, updatedAt: doc.updatedAt, sketch: doc.sketch };
-    const size = JSON.stringify(body).length;
-    if (this.cloud) {
-      if (size > 250000) return { ok: false, msg: 'This sketch is too large for the library (256 KB per sketch). Use File › Export sketch to keep it as a file.' };
-      for (let attempt = 0; attempt < 2; attempt++) {
-        try { await this.col().doc(doc.id).set(body); return { ok: true, where: 'cloud' }; }
-        catch (e) {
-          const code = e && e.code;
-          if (code === 'quota_exceeded') return { ok: false, msg: 'Your library is full. Delete a few sketches from Open, then save again.' };
-          if (code === 'unavailable' && attempt === 0) { await sleep(500 + Math.random() * 500); continue; }
-          break;
-        }
-      }
-    }
     const lib = this.localLib();
-    lib[doc.id] = body;
+    lib[doc.id] = { app: 'croquis', name: doc.name, updatedAt: doc.updatedAt, sketch: doc.sketch };
     if (lsSet(LS_LIB, JSON.stringify(lib))) return { ok: true, where: 'local' };
-    return { ok: false, msg: 'Saving is not available in this view. Use File › Export sketch to keep a copy.' };
+    return { ok: false, msg: 'This browser is not letting Croquis save (private window or storage full). Use File › Export sketch to keep a copy.' };
   },
-  async remove(it) {
-    if (it.where === 'cloud') {
-      try { await this.col().doc(it.id).delete(); } catch (e) { toast('This sketch could not be deleted. Try again.', 'err'); return false; }
-    } else { const lib = this.localLib(); delete lib[it.id]; lsSet(LS_LIB, JSON.stringify(lib)); }
-    return true;
-  },
+  async remove(it) { const lib = this.localLib(); delete lib[it.id]; lsSet(LS_LIB, JSON.stringify(lib)); return true; },
 };
-function updateStoreInfo() { $('storeInfo').textContent = store.cloud ? 'Saves to your library' : 'Saves in this browser'; }
+function updateStoreInfo() { /* saving is always in this browser; the footer shows the state */ }
+/* Unsaved changes show as an asterisk after the sketch name. */
 function setSaveState(state) {
-  const s = $('saveState');
-  s.classList.toggle('dirty', !!app.doc.dirty && state !== 'saving');
-  if (state === 'saving') s.textContent = 'Saving…';
-  else if (app.doc.dirty) s.textContent = app.doc.example ? 'Example, not saved' : app.doc.id ? 'Unsaved changes' : 'Not saved yet';
-  else if (app.doc.example) s.textContent = 'Example';
-  else s.textContent = app.doc.where === 'cloud' ? 'Saved to library' : app.doc.where === 'local' ? 'Saved in this browser' : '';
+  const dirty = !!app.doc.dirty && state !== 'saving';
+  const star = $('dirtyStar');
+  star.hidden = !dirty;
+  star.title = app.doc.example ? 'The example is not saved: Save (Ctrl+S) keeps a copy' : 'Unsaved changes: Save (Ctrl+S) keeps them in this browser';
+  fitDocName();
+  if (!app.readonly) document.title = (dirty ? '* ' : '') + (app.doc.name || 'Untitled sketch') + ' · Croquis';
   renderTabs();
+}
+/* The name field is as wide as the name, so the asterisk sits right after it. */
+function fitDocName() {
+  const inp = $('docName'), m = textMeasurer();
+  m.font = '500 15px ' + FONT_UI;
+  inp.style.width = Math.min(Math.max(m.measureText(inp.value || ' ').width + 22, 60), 340) + 'px';
 }
 async function saveDoc(copy) {
   const name = ($('docName').value || '').trim() || 'Untitled sketch';
@@ -6349,7 +6378,7 @@ async function saveDoc(copy) {
   if (!res.ok) { setSaveState(); toast(res.msg, 'err'); return; }
   app.doc.where = res.where; app.doc.dirty = false; app.doc.example = false;
   setSaveState(); saveDraft(); renderPM();
-  toast(res.where === 'cloud' ? 'Saved “' + app.doc.name + '” to your library.' : 'Saved “' + app.doc.name + '” in this browser.');
+  toast('Saved “' + app.doc.name + '” in this browser.');
 }
 function loadSketch(sk, meta, view) {
   K.solve(sk);
@@ -6370,7 +6399,9 @@ function loadSketch(sk, meta, view) {
   ensureAssets(sk);
 }
 function newDoc() {
-  openInTab(new K.Sketch(), { name: 'Untitled sketch' }, { cx: 30, cy: 20, s: Math.max(2, Math.min(app.W / 160, app.H / 110)) }, true);
+  const sk0 = new K.Sketch();
+  sk0.units = app.opts.units === 'in' ? 'in' : 'mm';
+  openInTab(sk0, { name: 'Untitled sketch' }, { cx: 30, cy: 20, s: Math.max(2, Math.min(app.W / 160, app.H / 110)) }, true);
 }
 function loadExample() { loadSketch(K.buildExample(), { name: 'Example · motor plate', example: true }); }
 
@@ -6405,7 +6436,7 @@ async function openLibrary() {
   showDialog({ title: 'Open sketch', body: [el('p', { class: 'hint', text: 'Loading your sketches…' })], foot: [note, importBtn, closeBtn] });
   const items = await store.list();
   if ($('dlg').hidden || $('dlgTitle').textContent !== 'Open sketch') return;
-  note.textContent = store.cloud ? 'Your library is private to you and follows you to any device.' : 'Sketches are kept in this browser.';
+  note.textContent = 'Sketches are kept in this browser. Export them as .json to move them to another device.';
   const body = $('dlgBody');
   body.replaceChildren();
   if (!items.length) {
@@ -6421,7 +6452,7 @@ async function openLibrary() {
     const del = el('button', { class: 'btn danger', type: 'button', text: 'Delete' });
     const card = el('div', { class: 'card' }, cv, el('div', { class: 'card-meta' },
       el('div', { class: 'card-name', text: it.name, title: it.name }),
-      el('div', { class: 'card-sub', text: fmtDate(it.updatedAt) + ' · ' + (it.where === 'cloud' ? 'Library' : 'This browser') }),
+      el('div', { class: 'card-sub', text: fmtDate(it.updatedAt) }),
       el('div', { class: 'card-acts' }, el('button', { class: 'btn primary', type: 'button', text: 'Open', onclick: open }), del)));
     del.addEventListener('click', async () => {
       if (!del.dataset.armed) {
@@ -6448,30 +6479,12 @@ async function openItem(it) {
 }
 
 /* ---------- files: download, SVG / PNG / DXF / JSON export ---------- */
-async function offerFile(filename, data, mime) {
-  await store.init();
-  if (store.dl) {
-    try { const r = await store.dl.save({ filename, data }); if (r && r.status === 'saved') toast('Saved ' + filename + '.'); }
-    catch (e) {
-      const code = e && e.code;
-      if (code === 'declined') return;
-      if (code === 'rate_limited') { toast('A save prompt is already open.'); return; }
-      toast('This file could not be saved here.', 'err');
-    }
-    return;
-  }
-  if (!store.framed) {
-    const blob = data instanceof Blob ? data : new Blob([data], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = el('a', { href: url, download: filename });
-    document.body.append(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 4000);
-    return;
-  }
-  if (typeof data === 'string') {
-    try { await navigator.clipboard.writeText(data); toast('Downloads are off in this view, so the file contents were copied to the clipboard.'); }
-    catch (e) { toast('Downloads are not available in this view.', 'err'); }
-  } else toast('Downloads are not available in this view.', 'err');
+function offerFile(filename, data, mime) {
+  const blob = data instanceof Blob ? data : new Blob([data], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = el('a', { href: url, download: filename });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 const nf = (x) => { const s = (+x).toFixed(2); return s.indexOf('.') >= 0 ? s.replace(/0+$/, '').replace(/\.$/, '') : s; };
 class SvgCtx {
@@ -6707,27 +6720,6 @@ function buildDXF() {
   const all = [...head, ...T, '0', 'SECTION', '2', 'ENTITIES', ...E, '0', 'ENDSEC', '0', 'EOF'];
   return { text: all.join('\r\n') + '\r\n', count };
 }
-const CRC_TABLE = (() => { const t = new Uint32Array(256); for (let i = 0; i < 256; i++) { let c = i; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[i] = c >>> 0; } return t; })();
-function crc32(b) { let c = 0xffffffff; for (let i = 0; i < b.length; i++) c = CRC_TABLE[(c ^ b[i]) & 0xff] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; }
-function zipOne(name, data) {
-  const nm = new TextEncoder().encode(name), crc = crc32(data), size = data.length;
-  const d = new Date();
-  const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
-  const date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
-  const lh = new DataView(new ArrayBuffer(30));
-  lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
-  lh.setUint16(10, time, true); lh.setUint16(12, date, true); lh.setUint32(14, crc, true); lh.setUint32(18, size, true); lh.setUint32(22, size, true);
-  lh.setUint16(26, nm.length, true); lh.setUint16(28, 0, true);
-  const ch = new DataView(new ArrayBuffer(46));
-  ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
-  ch.setUint16(12, time, true); ch.setUint16(14, date, true); ch.setUint32(16, crc, true); ch.setUint32(20, size, true); ch.setUint32(24, size, true);
-  ch.setUint16(28, nm.length, true); ch.setUint16(30, 0, true); ch.setUint16(32, 0, true); ch.setUint16(34, 0, true); ch.setUint16(36, 0, true);
-  ch.setUint32(38, 0, true); ch.setUint32(42, 0, true);
-  const end = new DataView(new ArrayBuffer(22));
-  end.setUint32(0, 0x06054b50, true); end.setUint16(8, 1, true); end.setUint16(10, 1, true);
-  end.setUint32(12, 46 + nm.length, true); end.setUint32(16, 30 + nm.length + size, true);
-  return new Blob([lh, nm, data, ch, nm, end], { type: 'application/zip' });
-}
 async function doExport(kind) {
   hideMenus();
   const base = slug(app.doc.name);
@@ -6739,8 +6731,7 @@ async function doExport(kind) {
   else if (kind === 'dxf') {
     const { text, count } = buildDXF();
     if (!count) { toast('There is no solid geometry to export: construction geometry is left out of the DXF.'); return; }
-    if (!store.framed) { await offerFile(base + '.dxf', text, 'application/dxf'); return; }
-    await offerFile(base + '-dxf.zip', zipOne(base + '.dxf', new TextEncoder().encode(text)), 'application/zip');
+    await offerFile(base + '.dxf', text, 'application/dxf');
   }
 }
 
@@ -6834,7 +6825,7 @@ function savePrefs() {
   if (app.readonly) return;
   lsSet(LS_PREFS, JSON.stringify({
     opts: app.opts, showRel: app.showRel, showDims: app.showDims, snapGrid: app.snapGrid,
-    colorMode: app.colorMode, showNames: app.showNames, side: app.sidePref, tab: app.tab,
+    colorMode: app.colorMode, showNames: app.showNames, side: app.sidePref, tab: app.tab, showGrid: app.showGrid, showHelp: app.showHelp, showOrigin: app.showOrigin,
   }));
 }
 function loadPrefs() {
@@ -6848,6 +6839,9 @@ function loadPrefs() {
     if (typeof p.snapGrid === 'boolean') app.snapGrid = p.snapGrid;
     if (p.colorMode === 'status' || p.colorMode === 'style') app.colorMode = p.colorMode;
     if (typeof p.showNames === 'boolean') app.showNames = p.showNames;
+    if (typeof p.showGrid === 'boolean') app.showGrid = p.showGrid;
+    if (typeof p.showOrigin === 'boolean') app.showOrigin = p.showOrigin;
+    if (typeof p.showHelp === 'boolean') app.showHelp = p.showHelp;
     if (typeof p.side === 'boolean') app.sidePref = p.side;
     if (p.tab === 'sketch' || p.tab === 'notes') app.tab = p.tab;
   } catch (e) { /* defaults */ }
@@ -6868,7 +6862,6 @@ function evFrom(e) {
 }
 function updateMouse(ev) {
   app.mouse.sx = ev.sx; app.mouse.sy = ev.sy; app.mouse.x = ev.x; app.mouse.y = ev.y; app.mouse.inside = true;
-  $('coords').textContent = 'X ' + ev.x.toFixed(2) + '  Y ' + ev.y.toFixed(2);
 }
 function startPinch() {
   if (app.gesture) cancelGesture();
@@ -6997,7 +6990,6 @@ function wireUI() {
   $('btnLink').addEventListener('click', linkFromSelection);
   $('btnEq').addEventListener('click', openEquations);
   $('btnGroup').addEventListener('click', () => groupSelection(app.sel.slice()));
-  $('btnDims').addEventListener('click', () => setShowDims(!app.showDims));
   for (const b of document.querySelectorAll('[data-act="hide"]')) b.addEventListener('click', hideToggle);
   for (const b of document.querySelectorAll('[data-act="side"]')) b.addEventListener('click', () => openSide(!app.side, true));
   for (const b of document.querySelectorAll('[data-act="layers"]')) b.addEventListener('click', () => {
@@ -7025,7 +7017,8 @@ function wireUI() {
     if (!b) return;
     const act = b.dataset.act;
     hideMenus();
-    if (act === 'saveas') saveDoc(true);
+    if (act === 'share') openShareDialog();
+    else if (act === 'saveas') saveDoc(true);
     else if (act === 'import') $('fileInput').click();
     else if (act === 'example') openExample();
     else if (act === 'picture') choosePicture();
@@ -7040,9 +7033,9 @@ function wireUI() {
   });
   $('fileInput').addEventListener('change', (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; onFilePicked(f); });
   $('docName').addEventListener('change', () => { const v = $('docName').value.trim() || 'Untitled sketch'; if (v !== app.doc.name) { app.doc.name = v; $('docName').value = v; app.doc.example = false; markDirty(); } });
+  $('docName').addEventListener('input', fitDocName);
   $('docName').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('docName').blur(); } e.stopPropagation(); });
   $('btnFit').addEventListener('click', zoomFit);
-  $('btnRel').addEventListener('click', () => setShowRel(!app.showRel));
   $('btnSnap').addEventListener('click', () => setSnap(!app.snapGrid));
   $('modOk').addEventListener('click', applyModify);
   $('modCancel').addEventListener('click', closeModify);
@@ -7067,13 +7060,16 @@ function openPanelOnNarrow(open, force) {
   for (const b of document.querySelectorAll('[data-act="panel"]')) b.setAttribute('aria-pressed', String(!!open));
 }
 const isWide = () => !window.matchMedia('(max-width: 1180px)').matches;
-/* The Browser sits beside the sheet on wide screens and floats over it
-   on narrower ones. Only the wide-screen choice is remembered. */
+/* The side panel shows either the Properties or the Browser. On narrow
+   screens it floats over the sheet and is opened on demand. */
 function openSide(open, user) {
   app.side = !!open;
-  document.querySelector('.main').classList.toggle('with-side', app.side);
+  $('pviewProps').hidden = app.side;
+  $('pviewBrowser').hidden = !app.side;
+  $('ptabProps').setAttribute('aria-selected', String(!app.side));
+  $('ptabBrowser').setAttribute('aria-selected', String(app.side));
   for (const b of document.querySelectorAll('#btnSide')) b.setAttribute('aria-pressed', String(app.side));
-  if (user && isWide()) { app.sidePref = app.side; savePrefs(); }
+  if (user) openPanelOnNarrow(true);
   if (app.side) renderSide();
   requestRender();
 }
@@ -7098,20 +7094,15 @@ function init() {
   app.ctx = app.cv.getContext('2d');
   readPalette();
   loadPrefs();
-  $('btnRel').setAttribute('aria-pressed', String(app.showRel));
   $('btnSnap').setAttribute('aria-pressed', String(app.snapGrid));
-  $('btnDims').setAttribute('aria-pressed', String(app.showDims));
   wireUI();
   wireCanvas();
   setTab(app.tab);
-  openSide(isWide() ? app.sidePref : false);
-  const mq = window.matchMedia('(max-width: 1180px)');
-  const onBreak = () => openSide(isWide() ? app.sidePref : false);
-  if (mq.addEventListener) mq.addEventListener('change', onBreak);
+  for (const b of document.querySelectorAll('[data-ptab]')) b.addEventListener('click', () => openSide(b.dataset.ptab === 'browser'));
+  openSide(false);
   sizeCanvas();
   startDocuments();
   updateStoreInfo();
-  store.init();
   requestRender();
   window.Croquis = {
     get sketch() { return app.sk; },
@@ -7640,12 +7631,12 @@ function dragNoteHandle(n, key, ev) {
     if (len < 1e-9) return;
     const sd = snapDirection(Math.atan2(vy, vx) / DEG, sk.anchorLine(n.a), n.dir.ref, ev);
     n.dir = sd.dir; n.len = len;
-    app.hud = 'L ' + fmt(len) + '   ∠ ' + fmt(norm360(sk.dirAngle(n.dir)), 1) + '°' + (n.dir.ref ? '  · ' + fmt(n.dir.ang, 1) + '° to ' + sk.get(n.dir.ref).name : '');
+    app.hud = 'L ' + fmtL(len) + '   ∠ ' + fmt(norm360(sk.dirAngle(n.dir)), 1) + '°' + (n.dir.ref ? '  · ' + fmt(n.dir.ang, 1) + '° to ' + sk.get(n.dir.ref).name : '');
   } else if (n.type === 'moment' && key === 'head') {
     n.r = Math.max(hyp(m.x - P.x, m.y - P.y), 1e-6);
     const a = Math.atan2(m.y - P.y, m.x - P.x) / DEG;
     n.ang = ev.ctrl ? a : snap15(a);
-    app.hud = 'R ' + fmt(n.r);
+    app.hud = 'R ' + fmtL(n.r);
   } else if (n.type === 'load' && (key === 'q0' || key === 'q1')) {
     const B = sk.anchorPos(n.b);
     if (!B) return;
@@ -7653,7 +7644,7 @@ function dragNoteHandle(n, key, ev) {
     const d = (m.x - P.x) * nx + (m.y - P.y) * ny;
     if (Math.abs(d) > 1e-9) n.side = d > 0 ? 1 : -1;
     n[key] = Math.abs(d);
-    app.hud = (key === 'q0' ? 'Start ' : 'End ') + fmt(n[key]);
+    app.hud = (key === 'q0' ? 'Start ' : 'End ') + fmtL(n[key]);
   } else if (n.type === 'support' && key === 'rot') {
     const a = Math.atan2(P.y - m.y, P.x - m.x) / DEG;
     n.ang = norm360(ev.ctrl ? a : Math.round(a / 15) * 15);
@@ -7686,7 +7677,7 @@ function directionAt(P0, ev, flip) {
   const sd = snapDirection(Math.atan2(vy, vx) / DEG, lineUnder(P0), 0, ev);
   return { x, y, len: hyp(vx, vy), dir: sd.dir, badges: sd.badge ? [sd.badge] : [], guides: [], snap: null };
 }
-const dirHud = (cur) => 'L ' + fmt(cur.len) + '   ∠ ' + fmt(norm360(app.sk.dirAngle(cur.dir)), 1) + '°';
+const dirHud = (cur) => 'L ' + fmtL(cur.len) + '   ∠ ' + fmt(norm360(app.sk.dirAngle(cur.dir)), 1) + '°';
 const TextTool = clickEngine({
   name: 'ntext', count: () => 2, singleClick: true,
   infer(i, ev) { return i === 0 ? inferAt(ev.sx, ev.sy) : inferAt(ev.sx, ev.sy, { onlyPoint: () => false }); },
@@ -7719,7 +7710,7 @@ const MomentTool = clickEngine({
     return { x, y, r: hyp(x - P.x, y - P.y), ang: ev.ctrl ? a : snap15(a), guides: [], badges: [], snap: null };
   },
   valid(pts, p) { return p.r * app.V.s > 8; },
-  hud(pts, cur) { return 'R ' + fmt(cur.r) + (app.opts.momentCcw ? '   counter-clockwise' : '   clockwise'); },
+  hud(pts, cur) { return 'R ' + fmtL(cur.r) + (app.opts.momentCcw ? '   counter-clockwise' : '   clockwise'); },
   preview(R, pts, cur) { notePreview(R, { type: 'moment', a: anchorFromInf(pts[0]), r: cur.r, ang: cur.ang, sweep: 270, ccw: app.opts.momentCcw }); },
   commit(pts) { addNoteUI('moment', { a: anchorFromInf(pts[0]), r: pts[1].r, ang: pts[1].ang, sweep: 270, ccw: app.opts.momentCcw }); },
 });
@@ -7732,7 +7723,7 @@ const LoadTool = clickEngine({
     return { x, y, q: Math.abs(d), side: d >= 0 ? 1 : -1, guides: [], badges: [], snap: null };
   },
   valid(pts, p) { return pts.length === 1 ? farEnough(pts[0], p, 6) : p.q * app.V.s > 6; },
-  hud(pts, cur) { return pts.length === 1 ? 'L ' + fmt(hyp(cur.x - pts[0].x, cur.y - pts[0].y)) : 'q ' + fmt(cur.q); },
+  hud(pts, cur) { return pts.length === 1 ? 'L ' + fmtL(hyp(cur.x - pts[0].x, cur.y - pts[0].y)) : 'q ' + fmtL(cur.q); },
   preview(R, pts, cur) {
     if (pts.length === 1) { pvLine(R, pts[0], cur, [4, 3]); return; }
     notePreview(R, { type: 'load', a: anchorFromInf(pts[0]), b: anchorFromInf(pts[1]), q0: cur.q, q1: cur.q, side: cur.side });
@@ -7756,7 +7747,7 @@ function twoPointNote(name, type) {
     name, count: () => 2,
     infer(i, ev) { return inferAt(ev.sx, ev.sy); },
     valid(pts, p) { return farEnough(pts[0], p, 10); },
-    hud(pts, cur) { return 'L ' + fmt(hyp(cur.x - pts[0].x, cur.y - pts[0].y)); },
+    hud(pts, cur) { return 'L ' + fmtL(hyp(cur.x - pts[0].x, cur.y - pts[0].y)); },
     preview(R, pts, cur) { notePreview(R, Object.assign(JSON.parse(JSON.stringify(K.NOTE_DEFAULTS[type])), { type, a: anchorFromInf(pts[0]), b: anchorFromInf(cur) }, extra())); },
     commit(pts) { addNoteUI(type, Object.assign({ a: anchorFromInf(pts[0]), b: anchorFromInf(pts[1]) }, extra())); },
   });
@@ -8349,12 +8340,25 @@ function renderSide() {
   if (f && body.contains(f) && (f.tagName === 'INPUT' || f.tagName === 'TEXTAREA')) { sideDirty = true; return; }
   sideDirty = false;
   const top = body.scrollTop;
-  body.replaceChildren(groupsSection(), layersSection(), varsSection(), ...(app.sk.pictures.size ? [picturesSection()] : []));
+  body.replaceChildren(showSection(), groupsSection(), layersSection(), varsSection(), ...(app.sk.pictures.size ? [picturesSection()] : []));
   body.scrollTop = top;
 }
 function wireSide() {
   $('sideBody').addEventListener('focusout', () => { setTimeout(() => { if (sideDirty) renderSide(); }, 0); });
   $('sideBody').addEventListener('mouseleave', () => { if (app.hoverGroup) { app.hoverGroup = 0; requestRender(); } });
+}
+/* What is drawn over the geometry: relation badges and dimensions. */
+function showSection() {
+  const row = (icon, name, on, set, title) => {
+    const r = el('li', { class: 'sb-row' + (on ? '' : ' off'), title });
+    r.append(miniBtn(on ? 'i-eye' : 'i-hide', (on ? 'Hide ' : 'Show ') + name.toLowerCase(), (e) => { e.stopPropagation(); set(!on); }, on ? 'on' : ''), svgUse(icon, 'i sm'), el('span', { class: 'sb-name', text: name }));
+    r.addEventListener('click', () => set(!on));
+    return r;
+  };
+  return el('section', { class: 'sb-sec', 'aria-label': 'Show' }, sectionHead('Show'),
+    el('ul', { class: 'sb-list' },
+      row('i-relation', 'Relations', app.showRel, setShowRel, 'Relation badges (horizontal, tangent, coincident…)'),
+      row('i-dim', 'Dimensions', app.showDims, setShowDims, 'Dimensions and their values')));
 }
 function sectionHead(title, ...tools) { return el('header', { class: 'sb-h' }, el('h3', { text: title }), ...tools); }
 function groupsSection() {
@@ -8509,16 +8513,16 @@ function openEquations() {
     const db = el('tbody');
     for (const c of dims) {
       const err = c.name ? ev.errors.get(c.name.toLowerCase()) : null;
-      const unit = c.type === 'angle' ? '°' : ' mm';
+      const unit = c.type === 'angle' ? '°' : ' ' + unitName();
       const nameIn = inputField('eqd-n-' + c.id, c.name, { text: true, label: 'Dimension name', onCommit: (s) => { const before = snapshot(); const r = K.renameDim(app.sk, c.id, s); if (r.status !== 'ok') toast(r.msg, 'err'); else commit(before); render(); } });
       const entry = c.driven
         ? el('span', { class: 'kind', text: 'driven (reference)' })
-        : inputField('eqd-x-' + c.id, c.expr ? '=' + c.expr : fmt(c.value, 6), { label: 'Value of ' + c.name, onCommit: (s) => { const cur = app.sk.cons.get(c.id); if (cur) { const e2 = applyDimEntry(cur, s); if (e2) toast(e2, 'err'); } render(); } });
+        : inputField('eqd-x-' + c.id, c.expr ? '=' + c.expr : fmt(c.value / dimK(c), 6), { label: 'Value of ' + c.name, onCommit: (s) => { const cur = app.sk.cons.get(c.id); if (cur) { const e2 = applyDimEntry(cur, s); if (e2) toast(e2, 'err'); } render(); } });
       const row = el('tr', { class: c.driven ? 'driven' : null },
         el('td', { class: 'nm' }, nameIn),
         el('td', { class: 'kind', text: K.DIM_INFO[c.type] }),
         el('td', {}, entry, err ? el('span', { class: 'err', text: err }) : null),
-        el('td', { class: 'val', text: fmt(c.driven ? K.measureDim(sk, c) : c.value, 4) + unit }));
+        el('td', { class: 'val', text: fmt((c.driven ? K.measureDim(sk, c) : c.value) / dimK(c), 4) + unit }));
       row.addEventListener('mouseenter', () => { app.hoverCon = c.id; requestRender(); });
       row.addEventListener('mouseleave', () => { app.hoverCon = null; requestRender(); });
       db.append(row);
@@ -8558,8 +8562,11 @@ const ISSUE = {
 const LS_TABS = 'croquis:tabs:v1';
 const lsTabKey = (id) => 'croquis:tab:' + id;
 const lsDel = (k) => { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } };
-Object.assign(app.opts, { offsetD: 5, offsetBoth: false, offsetChain: true, offsetBase: false });
+Object.assign(app.opts, { offsetD: 5, offsetBoth: false, offsetChain: true, offsetBase: false, scaleFirst: true });
 app.readonly = false;
+app.showGrid = true;
+app.showOrigin = false;
+app.showHelp = true;
 app.embed = false;
 
 /* ---------- tabs: several drawings open at once ---------- */
@@ -8821,8 +8828,6 @@ async function startViewer(mode, hp) {
   app.showRel = hp.get('rel') === '1';
   app.viewNotes = hp.get('notes') !== '0';
   app.viewSheet = hp.get('sheet') !== '0';
-  $('btnRel').setAttribute('aria-pressed', String(app.showRel));
-  $('btnDims').setAttribute('aria-pressed', String(app.showDims));
   app.sk = new K.Sketch();
   app.doc = { id: null, name: 'Loading…', where: null, dirty: false, example: false };
   app.an = K.analyze(app.sk);
@@ -8871,6 +8876,51 @@ function startDocuments() {
   if (hp.has('edit')) importSharedLink(hp);
 }
 
+/* ---------- the first dimension sets the scale ---------- */
+/* Sketches start at whatever size they were drawn. The first driving
+   dimension scales the whole sketch to match the typed value, and the
+   view zooms by the inverse amount, so the drawing keeps its size and
+   place on screen: only the numbers change. */
+function firstDimScale(c, value) {
+  const sk = app.sk;
+  if (!app.opts.scaleFirst || !c || !c.dim || c.driven || c.expr || c.type === 'angle' || sk.vars.size) return 0;
+  for (const d of sk.cons.values()) if (d.dim && !d.driven && d !== c) return 0;
+  const old = K.measureDim(sk, c);
+  if (!(old > 1e-9) || !(value > 0)) return 0;
+  const k = value / old;
+  if (Math.abs(k - 1) < 1e-9) return 0;
+  scaleSketch(sk, k);
+  c.value = value;
+  K.solve(sk);
+  app.V.s /= k; app.V.cx *= k; app.V.cy *= k;
+  return k;
+}
+/* Scales everything measured in millimetres about the origin. */
+function scaleSketch(sk, k) {
+  for (const e of sk.ents.values()) {
+    if (e.type === 'point') { sk.X[e.x] *= k; sk.X[e.y] *= k; }
+    else if (e.type === 'circle') sk.X[e.r] *= k;
+  }
+  const mul = (o, keys) => { if (o) for (const key of keys) if (Number.isFinite(o[key])) o[key] *= k; };
+  for (const c of sk.cons.values()) {
+    if (!c.dim) continue;
+    if (c.type !== 'angle') c.value *= k;
+    if (c.label) mul(c.label, c.type === 'angle' ? ['r'] : c.label.ang !== undefined ? ['k'] : ['o', 't']);
+  }
+  for (const n of sk.notes.values()) {
+    for (const key of sk.noteAnchors(n)) if (n[key] && n[key].k === 'free') mul(n[key], ['x', 'y']);
+    mul(n, ['len', 'q0', 'q1']);
+    if (n.type === 'moment') mul(n, ['r']);
+    mul(n.off, ['x', 'y']);
+    mul(n.lab, ['x', 'y']);
+  }
+  for (const p of sk.pictures.values()) mul(p, ['x', 'y', 'w', 'h']);
+  mul(sk.sheet, ['cx', 'cy']);
+}
+function firstDimToast(k) {
+  toast('First dimension: the sketch was scaled ×' + fmt(k, 3) + ' so it keeps its shape. Turn this off under Display.');
+}
+
 /* ---------- small dialog helpers ---------- */
 async function copyText(text, okMsg) {
   try { await navigator.clipboard.writeText(text); toast(okMsg || 'Copied to the clipboard.'); return true; }
@@ -8892,14 +8942,15 @@ function promptBox(title, text, value, unit) {
     const err = el('p', { class: 'modify-err', hidden: true });
     const finish = (v) => { if (done) return; done = true; app.dlgClose = null; $('dlg').hidden = true; resolve(v); };
     const ok = () => {
-      const v = evalExpr(inp.value);
+      let v = evalExpr(inp.value);
+      if (unit === 'mm') v = entryToMM(inp.value, v);
       if (v === null || !(v > 0)) { err.textContent = 'Type a length above zero, for example 120 or 4.5in.'; err.hidden = false; return; }
       finish(v);
     };
     inp.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); ok(); } else if (e.key === 'Escape') { e.preventDefault(); finish(null); } });
     showDialog({
       title, small: true,
-      body: [el('p', { text }), el('div', { style: 'display:flex;gap:8px;align-items:center' }, inp, el('span', { class: 'unit', text: unit || '' })), err],
+      body: [el('p', { text }), el('div', { style: 'display:flex;gap:8px;align-items:center' }, inp, el('span', { class: 'unit', text: unit === 'mm' ? unitName() : unit || '' })), err],
       foot: [el('button', { class: 'btn', type: 'button', text: 'Cancel', onclick: () => finish(null) }), el('button', { class: 'btn primary', type: 'button', text: 'Apply', onclick: ok })],
       onClose: () => finish(null),
     });
@@ -8977,10 +9028,11 @@ function openAbout() {
   brand.setAttribute('aria-hidden', 'true');
   brand.append(svgEl('use', { href: '#i-brand' }));
   const body = [
-    el('div', { class: 'about-head' }, brand, el('div', {}, el('h3', { text: 'Croquis' }), el('p', { text: 'Parametric 2D sketching for engineering drawings · version ' + APP_VERSION }))),
-    el('p', { text: 'Croquis (French for “sketch”) turns a rough idea into a dimensioned drawing: sketch with relations and dimensions as in SolidWorks, annotate forces and supports, place it on an A4 to A0 sheet with a title block, and export a PDF, SVG, DXF or TikZ figure. It runs entirely in your browser; your drawings stay on your device.' }),
+    el('div', { class: 'about-head' }, brand, el('div', {}, el('h3', { class: 'wordmark' }, 'CROQUIS', el('span', { class: 'dot', text: '.' })), el('p', { text: 'Quick constrained 2D sketches and schematics · version ' + APP_VERSION }))),
+    el('p', { text: 'Croquis (French for “sketch”) is for making 2D schematics fast: sketch with relations and dimensions, then drag the sketch by hand to see how the system moves. Add forces and supports, put it on a sheet if you need one, and export a PDF, SVG, DXF or TikZ figure. It is not a CAD system, just a quick way to explain a mechanism. It runs entirely in your browser; your drawings stay on your device.' }),
     el('div', { class: 'dlg-sec' }, el('h3', { text: 'Made by' }),
       el('p', { style: 'margin-bottom:6px' }, el('b', { text: AUTHOR.name })),
+      el('p', { class: 'hint', text: 'Made with the “technical” skill of an LLM, to match the field needs of an engineer.' }),
       el('ul', { class: 'link-list' },
         el('li', {}, extLink(AUTHOR.linkedin, 'LinkedIn')),
         el('li', {}, extLink(AUTHOR.github, 'GitHub · StepaneBinon')),
@@ -8995,7 +9047,7 @@ function openAbout() {
     el('div', { class: 'dlg-sec' }, el('h3', { text: 'License' }),
       el('p', {}, 'Free for personal and other noncommercial use under the ', el('a', { class: 'inline', href: 'https://polyformproject.org/licenses/noncommercial/1.0.0', target: '_blank', rel: 'noopener', text: 'PolyForm Noncommercial License 1.0.0' }), '. Using Croquis for profit, inside a company or as part of a paid product or service needs the author’s approval: ',
         el('a', { class: 'inline', href: AUTHOR.linkedin, target: '_blank', rel: 'noopener', text: 'send a message on LinkedIn' }), '.'),
-      el('p', { class: 'hint', text: '© 2026 ' + AUTHOR.name + '. Fonts: Barlow Semi Condensed and B612 Mono (SIL Open Font License).' })),
+      el('p', { class: 'hint', text: '© 2026 ' + AUTHOR.name + '. Fonts: Unbounded, Barlow Semi Condensed and B612 Mono (SIL Open Font License).' })),
   ];
   showDialog({ title: 'About Croquis', body, foot: [el('button', { class: 'btn', type: 'button', text: 'Keyboard shortcuts', onclick: openShortcuts }), el('button', { class: 'btn primary', type: 'button', text: 'Close', onclick: hideDialog })] });
 }
@@ -9015,9 +9067,84 @@ function openShortcuts() {
 }
 function openIssue(kind) { hideMenus(); window.open(ISSUE[kind], '_blank', 'noopener'); }
 
+/* ---------- units: millimetres or inches, per drawing ---------- */
+function updateUnitsUI() {
+  const b = $('btnUnits');
+  if (b) { b.textContent = unitName(); b.title = 'This drawing is in ' + (unitK() === 1 ? 'millimetres' : 'inches') + '. Click to switch to ' + (unitK() === 1 ? 'inches' : 'millimetres') + '.'; }
+  const z = $('zoomLbl');
+  if (z && app.sk) z.textContent = fmtZoom();
+}
+function setUnits(u) {
+  if (app.readonly || !app.sk || (app.sk.units || 'mm') === u) return;
+  const before = snapshot();
+  app.sk.units = u;
+  app.opts.units = u;
+  savePrefs();
+  commit(before);
+  toast(u === 'in' ? 'Inches: dimensions and fields now show and take inches. Equations still compute in mm unless you type a unit (2in).' : 'Millimetres.');
+}
+
+/* ---------- grid, tutorial texts, full screen ---------- */
+function setShowGrid(v) { app.showGrid = !!v; $('btnGrid').setAttribute('aria-pressed', String(app.showGrid)); savePrefs(); renderPM(); requestRender(); }
+function setShowHelp(v) {
+  app.showHelp = !!v;
+  document.body.classList.toggle('no-help', !app.showHelp);
+  const mi = $('miHelpTexts');
+  if (mi) mi.firstChild.nodeValue = (app.showHelp ? 'Hide' : 'Show') + ' tutorial texts ';
+  savePrefs(); renderPM();
+}
+const fsElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+function toggleFullscreen() {
+  const d = document.documentElement;
+  if (fsElement()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  else {
+    const req = d.requestFullscreen || d.webkitRequestFullscreen;
+    if (!req) { toast('Full screen is not available in this browser. Try F11.'); return; }
+    const p = req.call(d);
+    if (p && p.catch) p.catch(() => toast('Full screen was refused by the browser. Try F11.'));
+  }
+}
+function syncFullscreen() {
+  const on = !!fsElement(), b = $('btnFull');
+  b.setAttribute('aria-pressed', String(on));
+  b.title = on ? 'Leave full screen' : 'Full screen';
+  b.setAttribute('aria-label', b.title);
+  b.firstElementChild.firstElementChild.setAttribute('href', on ? '#i-shrink' : '#i-expand');
+  requestRender();
+}
+
+/* ---------- light / dark theme ---------- */
+const LS_THEME = 'croquis:theme';
+const THEMES = { auto: ['i-theme-auto', 'follows your system'], light: ['i-sun', 'light'], dark: ['i-moon', 'dark'] };
+function applyTheme(t, save) {
+  if (!THEMES[t]) t = 'auto';
+  if (t === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', t);
+  const b = $('btnTheme');
+  if (b) {
+    const next = { auto: 'light', light: 'dark', dark: 'auto' }[t];
+    b.firstElementChild.firstElementChild.setAttribute('href', '#' + THEMES[t][0]);
+    b.title = 'Theme: ' + THEMES[t][1] + '. Click for ' + THEMES[next][1] + '.';
+    b.setAttribute('aria-label', 'Theme: ' + THEMES[t][1]);
+    b.dataset.theme = t;
+  }
+  if (save) lsSet(LS_THEME, t);
+  readPalette();
+  requestRender();
+}
+
 /* ---------- wiring ---------- */
 function wireExtras() {
-  $('btnShare').addEventListener('click', openShareDialog);
+  $('btnGrid').addEventListener('click', () => setShowGrid(!app.showGrid));
+  $('btnGrid').setAttribute('aria-pressed', String(app.showGrid));
+  setShowHelp(app.showHelp);
+  $('btnFull').addEventListener('click', toggleFullscreen);
+  document.addEventListener('fullscreenchange', syncFullscreen);
+  document.addEventListener('webkitfullscreenchange', syncFullscreen);
+  applyTheme(lsGet(LS_THEME) || 'auto');
+  $('btnTheme').addEventListener('click', () => { const t = $('btnTheme').dataset.theme || 'auto'; applyTheme({ auto: 'light', light: 'dark', dark: 'auto' }[t], true); });
+
+  $('btnUnits').addEventListener('click', () => setUnits(unitK() === 1 ? 'in' : 'mm'));
   $('btnBrand').addEventListener('click', openAbout);
   $('btnCredit').addEventListener('click', openAbout);
   $('btnHelp').addEventListener('click', (e) => {
@@ -9035,6 +9162,7 @@ function wireExtras() {
     hideMenus();
     if (act === 'about') openAbout();
     else if (act === 'keys') openShortcuts();
+    else if (act === 'helptexts') setShowHelp(!app.showHelp);
     else openIssue(act);
   });
   for (const b of document.querySelectorAll('.tb[data-act="picture"]')) b.addEventListener('click', choosePicture);
@@ -9192,7 +9320,7 @@ function drawSheet(R) {
   cell(0, 30, 0, 10, 'Date', F.date);
   cell(30, 50, 0, 10, 'Scale', scaleText(sh));
   cell(50, 70, 0, 10, 'Size', sh.size + (sh.orient === 'portrait' ? ' P' : ''));
-  cell(70, 90, 0, 10, sh.projection === 'third' ? '3rd angle · mm' : sh.projection === 'first' ? '1st angle · mm' : 'Units · mm', '');
+  cell(70, 90, 0, 10, sh.projection === 'third' ? '3rd angle · ' + unitName() : sh.projection === 'first' ? '1st angle · ' + unitName() : 'Units · ' + unitName(), '');
   cell(90, 150, 0, 10, 'Drawing number', F.number, { bold: true, ph: '—' });
   cell(150, 162, 0, 10, 'Rev', F.rev, { bold: true });
   cell(162, 180, 0, 10, 'Sheet', F.sheetNo);
@@ -9341,6 +9469,94 @@ function pmSheet(out) {
   }, svgUse('i-trash'), 'Remove the sheet'))));
 }
 
+/* ---------- fills: circles and closed outlines ---------- */
+/* A fill is a style of the curves that bound a region. A circle fills on
+   its own; lines and arcs fill when they close a loop. Regions with the
+   same color and opacity are painted together with the even-odd rule, so
+   a filled hole inside a filled plate stays empty. */
+const FILL_OPACITY = 0.25;
+function filledLoops(sk) {
+  const ids = [], circles = [];
+  for (const e of sk.ents.values()) {
+    if (!e.style || !e.style.fill || !sk.entVisible(e.id)) continue;
+    if (e.type === 'circle') circles.push(e); else if (e.type === 'line' || e.type === 'arc') ids.push(e.id);
+  }
+  const loops = ids.length ? K.offsetChains(sk, ids).chains.filter((c) => c.closed) : [];
+  return { loops, circles };
+}
+function traceLoop(R, ch) {
+  const sk = app.sk, ctx = R.ctx;
+  ch.items.forEach((it, i) => {
+    const e = it.e;
+    if (e.type === 'line') {
+      const A = sk.P(it.rev ? e.p2 : e.p1), B = sk.P(it.rev ? e.p1 : e.p2), [ax, ay] = R.toS(A.x, A.y), [bx, by] = R.toS(B.x, B.y);
+      if (!i) ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+    } else {
+      const g = sk.arcGeom(e), [cx, cy] = R.toS(g.c.x, g.c.y), r = Math.max(g.r * R.s, 0.01);
+      if (!it.rev) ctx.arc(cx, cy, r, -g.a1, -g.a2, true); else ctx.arc(cx, cy, r, -g.a2, -g.a1, false);
+    }
+  });
+  ctx.closePath();
+}
+function drawFills(R) {
+  const sk = app.sk, { loops, circles } = filledLoops(sk);
+  if (!loops.length && !circles.length) return;
+  const groups = new Map();
+  const key = (st) => st.fill + '|' + (st.fillOp === undefined ? FILL_OPACITY : st.fillOp);
+  const add = (st, fn) => { const k = key(st); if (!groups.has(k)) groups.set(k, { st, fns: [] }); groups.get(k).fns.push(fn); };
+  for (const ch of loops) add(ch.items[0].e.style, () => traceLoop(R, ch));
+  for (const e of circles) add(e.style, () => { const c = sk.P(e.c), [x, y] = R.toS(c.x, c.y), r = Math.max(sk.X[e.r] * R.s, 0.01); R.ctx.moveTo(x + r, y); R.ctx.arc(x, y, r, 0, TAU); R.ctx.closePath(); });
+  const ctx = R.ctx;
+  for (const { st, fns } of groups.values()) {
+    ctx.save();
+    ctx.beginPath();
+    for (const fn of fns) fn();
+    ctx.fillStyle = colorOf(st.fill, R.exp ? false : DARK) || '#888888';
+    ctx.globalAlpha = st.fillOp === undefined ? FILL_OPACITY : st.fillOp;
+    ctx.fill('evenodd');
+    ctx.restore();
+  }
+}
+/* Filling one edge of a closed outline fills the whole outline. */
+function fillTargets(items) {
+  const sk = app.sk, out = new Set(items);
+  const segs = items.filter((e) => e.type === 'line' || e.type === 'arc');
+  if (segs.length) {
+    const all = [...sk.ents.values()].filter((e) => (e.type === 'line' || e.type === 'arc') && sk.entVisible(e.id)).map((e) => e.id);
+    for (const ch of K.offsetChains(sk, all).chains) {
+      if (!ch.closed || !ch.items.some((it) => segs.includes(it.e))) continue;
+      for (const it of ch.items) out.add(it.e);
+    }
+  }
+  return [...out];
+}
+function pmFill(kids, curves) {
+  const sk = app.sk;
+  const fills = curves.map((e) => (e.style && e.style.fill) || null);
+  const cur = fills.every((f) => f === fills[0]) ? fills[0] : undefined;
+  const ops = curves.filter((e) => e.style && e.style.fill).map((e) => (e.style.fillOp === undefined ? FILL_OPACITY : e.style.fillOp));
+  const op = ops.length ? ops[0] : FILL_OPACITY;
+  kids.push(styleRow('Fill', swatchPicker(cur === undefined ? undefined : cur, (v) => applyStyle(fillTargets(curves), v ? { fill: v, fillOp: op } : { fill: null, fillOp: null }), 'none')));
+  if (fills.some(Boolean)) {
+    const range = el('input', { type: 'range', min: '5', max: '100', step: '5', 'aria-label': 'Fill opacity' });
+    range.value = String(Math.round(op * 100));
+    const lab = el('span', { class: 'unit', text: range.value + ' %' });
+    let before = null;
+    range.addEventListener('input', () => {
+      if (!before) before = snapshot();
+      for (const e of fillTargets(curves)) if (e.style && e.style.fill) e.style.fillOp = (+range.value) / 100;
+      lab.textContent = range.value + ' %';
+      requestRender();
+    });
+    range.addEventListener('change', () => { if (before) { commit(before); before = null; } });
+    kids.push(styleRow('Fill opacity', el('div', { style: 'display:flex;gap:8px;align-items:center' }, range, lab)));
+    const { loops, circles } = filledLoops(sk);
+    const shown = new Set([...circles.map((e) => e.id), ...loops.flatMap((c) => c.items.map((it) => it.e.id))]);
+    if (curves.some((e) => e.style && e.style.fill && !shown.has(e.id))) kids.push(el('p', { class: 'note-line', text: 'Part of this fill is not shown: lines and arcs only fill once they form a closed outline.' }));
+  } else kids.push(el('p', { class: 'note-line', text: 'Fills a circle, or a closed outline: pick any one of its edges.' }));
+}
+
 /* ---------- Offset tool ---------- */
 const isCurveEnt = (e) => e && (e.type === 'line' || e.type === 'arc' || e.type === 'circle');
 function offsetBase() {
@@ -9375,7 +9591,7 @@ const OffsetTool = {
     }
     ts.ids = ids;
     ts.plan = ids.length ? K.planOffset(app.sk, ids, app.opts.offsetD, ts.m, app.opts.offsetBoth) : null;
-    app.hud = ts.plan ? (ts.plan.ok ? 'Offset ' + fmt(app.opts.offsetD) + (app.opts.offsetBoth ? ' both sides' : '') : ts.plan.msg) : null;
+    app.hud = ts.plan ? (ts.plan.ok ? 'Offset ' + fmtL(app.opts.offsetD) + (app.opts.offsetBoth ? ' both sides' : '') : ts.plan.msg) : null;
     requestRender();
   },
   up(ev) {
@@ -9648,7 +9864,7 @@ function pictureDragMove(g, ev) {
     const t = Math.max(((ev.x - g.O.x) * dx + (ev.y - g.O.y) * dy) / (L * L), 0.02);
     p.w = g.p0.w * t; p.h = g.p0.h * t;
     p.x = g.O.x + dx * t / 2; p.y = g.O.y + dy * t / 2;
-    app.hud = fmt(p.w) + ' × ' + fmt(p.h) + ' mm';
+    app.hud = fmtL(p.w) + ' × ' + fmtL(p.h) + ' ' + unitName();
   } else { p.x = g.p0.x + ev.x - g.x; p.y = g.p0.y + ev.y - g.y; app.hud = null; }
   requestRender();
   schedulePMValues();
@@ -9701,7 +9917,7 @@ const CalibrateTool = {
   name: 'calibrate',
   init: () => ({ pid: app.calibrate || selPictures()[0] || ([...app.sk.pictures.keys()][0] || 0), pts: [], cur: null }),
   down() {},
-  move(ev) { const ts = app.ts; ts.cur = { x: ev.x, y: ev.y }; app.hud = ts.pts.length ? 'Measured ' + fmt(hyp(ev.x - ts.pts[0].x, ev.y - ts.pts[0].y)) + ' mm' : 'Click the first point'; requestRender(); },
+  move(ev) { const ts = app.ts; ts.cur = { x: ev.x, y: ev.y }; app.hud = ts.pts.length ? 'Measured ' + fmtL(hyp(ev.x - ts.pts[0].x, ev.y - ts.pts[0].y)) + ' ' + unitName() : 'Click the first point'; requestRender(); },
   async up(ev) {
     const ts = app.ts;
     const p = app.sk.pictures.get(ts.pid);
@@ -9711,7 +9927,7 @@ const CalibrateTool = {
     const [a, b] = ts.pts, meas = hyp(b.x - a.x, b.y - a.y);
     ts.pts = [];
     if (!(meas * app.V.s > 4)) { toast('Click two points further apart.'); return; }
-    const real = await promptBox('Real distance', 'These two points are ' + fmt(meas) + ' mm apart on the picture. What is the real distance between them?', fmt(meas, 3), 'mm');
+    const real = await promptBox('Real distance', 'These two points are ' + fmtL(meas) + ' ' + unitName() + ' apart on the picture. What is the real distance between them?', fmtL(meas, 4), 'mm');
     if (!real) { requestRender(); return; }
     const f = real / meas;
     patchPictures([p.id], (q) => { q.w *= f; q.h *= f; q.x = a.x + (q.x - a.x) * f; q.y = a.y + (q.y - a.y) * f; });
@@ -9788,6 +10004,12 @@ const svgRestore = SvgCtx.prototype.restore;
 SvgCtx.prototype.restore = function () {
   while (this.openG && this.openG.length && this.openG[this.openG.length - 1] >= this.stack.length) { this.openG.pop(); this.parts.push('</g>'); }
   svgRestore.call(this);
+};
+Object.defineProperty(SvgCtx.prototype, 'globalAlpha', { get() { return this.st.alpha === undefined ? 1 : this.st.alpha; }, set(v) { this.st.alpha = v; } });
+SvgCtx.prototype.fill = function (rule) {
+  if (!this.d) return;
+  const a = this.globalAlpha;
+  this.parts.push('<path d="' + this.d + '" fill="' + this.st.fillStyle + '"' + (a < 1 ? ' fill-opacity="' + nf(a) + '"' : '') + (rule === 'evenodd' ? ' fill-rule="evenodd"' : '') + '/>');
 };
 SvgCtx.prototype.picture = function (a, c, alpha) {
   const m = [(c.TR.x - c.TL.x), (c.TR.y - c.TL.y), (c.BL.x - c.TL.x), (c.BL.y - c.TL.y), c.TL.x, c.TL.y].map(nf).join(' ');
@@ -9930,7 +10152,15 @@ class PdfCtx {
     return pn(s.lineWidth * 0.75) + ' w ' + cap + ' J 1 j [' + s.dash.map((v) => pn(Math.max(v, 0.01) * 0.75)).join(' ') + '] 0 d ' + pdfColor(s.strokeStyle) + ' RG';
   }
   stroke() { if (this.d.length) this.ops.push(this._strokeState() + '\n' + this.d.join(' ') + ' S'); }
-  fill(rule) { if (this.d.length) this.ops.push(pdfColor(this.st.fillStyle) + ' rg\n' + this.d.join(' ') + (rule === 'evenodd' ? ' f*' : ' f')); }
+  get globalAlpha() { return this.st.alpha === undefined ? 1 : this.st.alpha; }
+  set globalAlpha(v) { this.st.alpha = v; }
+  fill(rule) {
+    if (!this.d.length) return;
+    const a = this.globalAlpha, body = pdfColor(this.st.fillStyle) + ' rg\n' + this.d.join(' ') + (rule === 'evenodd' ? ' f*' : ' f');
+    if (a >= 1) { this.ops.push(body); return; }
+    const key = pn(a);
+    if (!this.alphas.has(key)) this.alphas.set(key, 'GS' + (this.alphas.size + 1));
+    this.ops.push('q /' + this.alphas.get(key) + ' gs ' + body + ' Q'); }
   clip() { if (this.d.length) this.ops.push(this.d.join(' ') + ' W n'); }
   fillRect(x, y, w, h) { this.ops.push(pdfColor(this.st.fillStyle) + ' rg ' + this.P(x, y + h) + ' ' + pn(w * 0.75) + ' ' + pn(h * 0.75) + ' re f'); }
   strokeRect(x, y, w, h) { this.beginPath(); this.rect(x, y, w, h); this.stroke(); }
@@ -10126,7 +10356,15 @@ class TikzCtx {
     if (s.lineCap === 'round') o.push('line cap=round');
     this.out.push('\\draw[' + o.join(', ') + '] ' + this.d.join(' ') + ';');
   }
-  fill() { if (this.d.length) this.out.push('\\fill[' + this.color(this.st.fillStyle) + '] ' + this.d.join(' ') + ';'); }
+  get globalAlpha() { return this.st.alpha === undefined ? 1 : this.st.alpha; }
+  set globalAlpha(v) { this.st.alpha = v; }
+  fill(rule) {
+    if (!this.d.length) return;
+    const o = [this.color(this.st.fillStyle)];
+    if (this.globalAlpha < 1) o.push('fill opacity=' + tn(this.globalAlpha));
+    if (rule === 'evenodd') o.push('even odd rule');
+    this.out.push('\\fill[' + o.join(', ') + '] ' + this.d.join(' ') + ';');
+  }
   clip() { if (!this.d.length) return; this.out.push('\\begin{scope}', '\\clip ' + this.d.join(' ') + ';'); this.scopes.push(this.stack.length); }
   fillRect(x, y, w, h) { this.out.push('\\fill[' + this.color(this.st.fillStyle) + '] ' + this.P(x, y) + ' rectangle ' + this.P(x + w, y + h) + ';'); }
   strokeRect(x, y, w, h) { this.beginPath(); this.rect(x, y, w, h); this.stroke(); }
