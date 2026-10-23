@@ -10,6 +10,31 @@
 <meta property="og:title" content="Croquis — quick constrained 2D sketches">
 <meta property="og:description" content="Sketch, constrain and drag 2D schematics in your browser, then export a PDF, SVG, DXF or TikZ figure.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://bare-metal-foundry.github.io/croquis/">
+<meta property="og:image" content="https://raw.githubusercontent.com/Bare-Metal-Foundry/croquis/main/docs/screenshot.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="keywords" content="2D sketch, constraint solver, geometric constraints, schematic, mechanism, free-body diagram, engineering drawing, dimensioning, SVG, PDF, TikZ, LaTeX, DXF, figure generator, CLI, AI agents">
+<link rel="canonical" href="https://bare-metal-foundry.github.io/croquis/">
+<link rel="alternate" type="text/plain" title="Croquis for language models" href="llms.txt">
+<link rel="code-repository" href="https://github.com/Bare-Metal-Foundry/croquis">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Croquis",
+  "url": "https://bare-metal-foundry.github.io/croquis/",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Any (web browser); Node.js 18+ for the command-line tool",
+  "description": "Quick constrained 2D sketches and schematics in the browser: relations and dimensions solved like a CAD sketcher, engineering annotations, and SVG, PDF, DXF and TikZ export. A zero-dependency command-line tool lets scripts and AI agents generate exact figures from JSON.",
+  "softwareHelp": "https://github.com/Bare-Metal-Foundry/croquis/blob/main/docs/API.md",
+  "codeRepository": "https://github.com/Bare-Metal-Foundry/croquis",
+  "license": "https://polyformproject.org/licenses/noncommercial/1.0.0",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "author": { "@type": "Person", "name": "Stépane Binon", "url": "https://www.linkedin.com/in/stepane-binon/", "sameAs": ["https://github.com/StepaneBinon"] },
+  "keywords": "2D sketch, constraint solver, schematic, mechanism, free-body diagram, engineering drawing, SVG, PDF, TikZ, LaTeX, CLI, AI agents"
+}
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect x='1.5' y='1.5' width='23' height='23' rx='5' fill='%23161a1f'/%3E%3Cpath d='M6 19.5L14.5 6.5' stroke='%23fbfcfd' stroke-width='1.7' fill='none'/%3E%3Cpath d='M14.5 6.5a6.5 6.5 0 0 1 5 6.5' stroke='%230a98ae' stroke-width='1.7' fill='none'/%3E%3Ccircle cx='6' cy='19.5' r='1.8' fill='%23fbfcfd'/%3E%3Ccircle cx='14.5' cy='6.5' r='1.8' fill='%23fbfcfd'/%3E%3C/svg%3E">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -539,6 +564,12 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
 
 </head>
 <body>
+<noscript>
+  <h1>Croquis — quick constrained 2D sketches and schematics</h1>
+  <p>Croquis is a free web app for sketching 2D geometry tied together by relations and dimensions, solved like a CAD sketcher, with forces, supports and other engineering annotations. It exports SVG, PDF, PNG, DXF and TikZ for LaTeX. The web app needs JavaScript.</p>
+  <p>Scripts and AI agents can use the same solver without a browser: <code>npx github:Bare-Metal-Foundry/croquis build spec.json --svg figure.svg</code>. See the <a href="https://github.com/Bare-Metal-Foundry/croquis/blob/main/docs/API.md">headless API</a>, the <a href="llms.txt">llms.txt summary</a> and the <a href="https://github.com/Bare-Metal-Foundry/croquis">source code on GitHub</a>.</p>
+  <p>By Stépane Binon. Free for personal and noncommercial use (PolyForm Noncommercial 1.0.0).</p>
+</noscript>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="i-brand" viewBox="0 0 26 26"><rect x="1.5" y="1.5" width="23" height="23" rx="5" fill="var(--ink)" stroke="none"/><path d="M6 19.5L14.5 6.5" stroke="var(--sheet)" stroke-width="1.7"/><path d="M14.5 6.5a6.5 6.5 0 0 1 5 6.5" stroke="var(--select)" stroke-width="1.7"/><circle cx="6" cy="19.5" r="1.8" fill="var(--sheet)" stroke="none"/><circle cx="14.5" cy="6.5" r="1.8" fill="var(--sheet)" stroke="none"/><path d="M6 21.5h13.5" stroke="var(--sheet)" stroke-width="1" stroke-dasharray="1.6 1.6" opacity=".7"/></symbol>
@@ -6614,9 +6645,9 @@ function textMeasurer() {
   if (!measureCanvas) measureCanvas = document.createElement('canvas').getContext('2d');
   return measureCanvas;
 }
-function buildSVG() {
+function buildSVG(scale) {
   if (sheetShown()) return buildSheetSVG();
-  const s = 4;
+  const s = scale > 0 ? scale : 4;
   const vw = exportView(s);
   const ctx = new SvgCtx();
   ctx.measurer = textMeasurer();
@@ -10496,8 +10527,43 @@ function openTikzDialog(base) {
   });
 }
 
+/* ---- headless use: croquis.mjs loads this page's scripts in Node and
+   renders with the same code as the app, without a page ---- */
+function headlessApi() {
+  return {
+    K,
+    /* Makes sk the drawing that the export functions render. */
+    use(sk, o = {}) {
+      app.sk = sk;
+      app.doc = { id: null, name: o.name || 'Drawing', where: null, dirty: false, example: false };
+      app.an = K.analyze(sk);
+      app.hot = new Set(); app.sel = []; app.selGroups = [];
+      app.showDims = o.dims !== false; app.showNames = !!o.names; app.colorMode = 'style';
+      app.V = { cx: 0, cy: 0, s: 4 }; app.W = 1000; app.H = 1000;
+      PAL = Object.assign({}, PRINT);
+      return app.an;
+    },
+    /* Figures are scaled to about 600 px (160 mm) across: big parts no longer
+       give huge files with tiny text, small parts are not enlarged. */
+    svg(o) {
+      const bb = app.sk.bbox(false) || app.sk.bbox(true);
+      const span = bb ? Math.max(bb.x1 - bb.x0, bb.y1 - bb.y0, 1e-6) : 100;
+      return buildSVG((o && o.scale) || Math.min(4, 600 / span));
+    },
+    pdf: () => buildPDFBytes(),
+    tikz: (o) => buildTikz(Object.assign({ size: sheetShown() ? 'sheet' : 'fit', width: 12, dims: app.showDims, notes: true, standalone: false }, o || {})),
+    fitSheet: (sh) => fitSheet(sh),
+    async link(mode) {
+      const sj = app.sk.toJSON();
+      delete sj.pictures;
+      return APP_URL + '#' + (mode || 'view') + '=' + await encodeShare({ n: app.doc.name, s: sj });
+    },
+  };
+}
+
 /* ---- Croquis UI: start (runs after every part is defined) ---- */
-init();
+if (window.CROQUIS_HEADLESS) window.CroquisHeadless = headlessApi();
+else init();
 
 })();
 

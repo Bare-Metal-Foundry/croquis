@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1097.87mm" height="465.33mm" viewBox="57.78 -29 658.72 279.2">
+<title>Simply supported beam</title>
+<rect x="57.78" y="-29" width="658.72" height="279.2" fill="#ffffff"/>
+<path d="M90 100L690 100" fill="none" stroke="#111418" stroke-width="3.2" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M482.9 100A2.9 2.9 0 1 1 477.1 100A2.9 2.9 0 1 1 482.9 100" fill="#111418"/>
+<path d="M90 104L90 178" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M690 104L690 178" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M90 172L690 172" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M90 172L99 168.8L99 175.2Z" fill="#111418"/>
+<path d="M690 172L681 175.2L681 168.8Z" fill="#111418"/>
+<rect x="370.4" y="163.5" width="39.2" height="17" fill="#ffffff"/>
+<text x="390" y="177.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">1000</text>
+<path d="M90 104L90 154" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M480 104L480 154" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M90 148L480 148" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M90 148L99 144.8L99 151.2Z" fill="#111418"/>
+<path d="M480 148L471 151.2L471 144.8Z" fill="#111418"/>
+<rect x="269.3" y="139.5" width="31.4" height="17" fill="#ffffff"/>
+<text x="285" y="153.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">650</text>
+<path d="M90 100L79 117.6L101 117.6Z" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M73.5 117.6L106.5 117.6" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M73.5 117.6L67.78 124.2" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M79 117.6L73.28 124.2" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M84.5 117.6L78.78 124.2" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M90 117.6L84.28 124.2" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M95.5 117.6L89.78 124.2" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M101 117.6L95.28 124.2" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M106.5 117.6L100.78 124.2" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M92.6 100A2.6 2.6 0 1 1 87.4 100A2.6 2.6 0 1 1 92.6 100" fill="#ffffff"/>
+<path d="M92.6 100A2.6 2.6 0 1 1 87.4 100A2.6 2.6 0 1 1 92.6 100" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M690 100L679 113.64L701 113.64Z" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M687.03 116.72A3.08 3.08 0 1 1 680.87 116.72A3.08 3.08 0 1 1 687.03 116.72" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M699.13 116.72A3.08 3.08 0 1 1 692.97 116.72A3.08 3.08 0 1 1 699.13 116.72" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M673.5 119.8L706.5 119.8" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M673.5 119.8L667.78 126.4" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M679 119.8L673.28 126.4" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M684.5 119.8L678.78 126.4" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M690 119.8L684.28 126.4" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M695.5 119.8L689.78 126.4" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M701 119.8L695.28 126.4" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M706.5 119.8L700.78 126.4" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M692.6 100A2.6 2.6 0 1 1 687.4 100A2.6 2.6 0 1 1 692.6 100" fill="#ffffff"/>
+<path d="M692.6 100A2.6 2.6 0 1 1 687.4 100A2.6 2.6 0 1 1 692.6 100" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M90 64L90 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M90 100L84.98 87.4L95.02 87.4Z" fill="#c2378f"/>
+<path d="M120 64L120 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M120 100L114.98 87.4L125.02 87.4Z" fill="#c2378f"/>
+<path d="M150 64L150 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M150 100L144.98 87.4L155.02 87.4Z" fill="#c2378f"/>
+<path d="M180 64L180 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M180 100L174.98 87.4L185.02 87.4Z" fill="#c2378f"/>
+<path d="M210 64L210 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M210 100L204.98 87.4L215.02 87.4Z" fill="#c2378f"/>
+<path d="M240 64L240 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M240 100L234.98 87.4L245.02 87.4Z" fill="#c2378f"/>
+<path d="M270 64L270 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M270 100L264.98 87.4L275.02 87.4Z" fill="#c2378f"/>
+<path d="M300 64L300 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M300 100L294.98 87.4L305.02 87.4Z" fill="#c2378f"/>
+<path d="M330 64L330 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M330 100L324.98 87.4L335.02 87.4Z" fill="#c2378f"/>
+<path d="M360 64L360 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M360 100L354.98 87.4L365.02 87.4Z" fill="#c2378f"/>
+<path d="M390 64L390 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M390 100L384.98 87.4L395.02 87.4Z" fill="#c2378f"/>
+<path d="M420 64L420 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M420 100L414.98 87.4L425.02 87.4Z" fill="#c2378f"/>
+<path d="M450 64L450 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M450 100L444.98 87.4L455.02 87.4Z" fill="#c2378f"/>
+<path d="M480 64L480 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M480 100L474.98 87.4L485.02 87.4Z" fill="#c2378f"/>
+<path d="M90 64L120 64L150 64L180 64L210 64L240 64L270 64L300 64L330 64L360 64L390 64L420 64L450 64L480 64" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="248.5" y="39" width="73" height="22" fill="#ffffff"/>
+<text x="250.5" y="54.2" font-family="&quot;Barlow Semi Condensed&quot;, &quot;Arial Narrow&quot;, &quot;Roboto Condensed&quot;, system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="start" fill="#c2378f">q = 2 kN/m</text>
+<path d="M600 16L600 88.66" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M600 100L594.98 87.4L605.02 87.4Z" fill="#c2378f"/>
+<rect x="571" y="-9" width="58" height="22" fill="#ffffff"/>
+<text x="573" y="6.2" font-family="&quot;Barlow Semi Condensed&quot;, &quot;Arial Narrow&quot;, &quot;Roboto Condensed&quot;, system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="start" fill="#c2378f">F = 5 kN</text>
+<rect x="387.8" y="214.2" width="123" height="26" fill="#ffffff"/>
+<text x="391.8" y="231.4" font-family="&quot;Barlow Semi Condensed&quot;, &quot;Arial Narrow&quot;, &quot;Roboto Condensed&quot;, system-ui, sans-serif" font-size="14" font-weight="500" text-anchor="start" fill="#c2378f">Reactions: R₁, R₂</text>
+</svg>

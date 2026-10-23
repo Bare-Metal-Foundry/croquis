@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="143.31mm" height="42.64mm" viewBox="46.75 60.59 573.25 170.54">
+<title>Crank and slider</title>
+<rect x="46.75" y="60.59" width="573.25" height="170.54" fill="#ffffff"/>
+<path d="M90 167.13L610 167.13" fill="none" stroke="#8a9099" stroke-width="1.4" stroke-dasharray="9 3 2 3" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M90 167.13L181.93 90" fill="none" stroke="#111418" stroke-width="1.4" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M181.93 90L492.49 167.13" fill="none" stroke="#111418" stroke-width="1.4" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M87.43 164.07L77.14 151.81" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M179.35 86.94L169.07 74.68" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M81 156.41L172.93 79.28" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M81 156.41L85.84 148.17L89.95 153.08Z" fill="#111418"/>
+<path d="M172.93 79.28L168.09 87.51L163.97 82.61Z" fill="#111418"/>
+<rect x="115.16" y="109.34" width="23.6" height="17" fill="#ffffff"/>
+<text x="126.96" y="123.39" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">30</text>
+<path d="M182.89 86.12L186.75 70.59" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M493.45 163.25L497.31 147.72" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M185.3 76.41L495.86 153.55" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M185.3 76.41L194.81 75.48L193.26 81.69Z" fill="#111418"/>
+<path d="M495.86 153.55L486.36 154.48L487.9 148.27Z" fill="#111418"/>
+<rect x="328.78" y="106.48" width="23.6" height="17" fill="#ffffff"/>
+<text x="340.58" y="120.53" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">80</text>
+<path d="M114 167.13L114 167.13A24 24 0 0 0 108.39 151.71" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M114 167.13L110.8 158.13L117.2 158.13Z" fill="#111418"/>
+<path d="M108.39 151.71L116.62 156.55L111.72 160.66Z" fill="#111418"/>
+<rect x="96.85" y="150.43" width="31.4" height="17" fill="#ffffff"/>
+<text x="112.55" y="164.48" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">40°</text>
+<path d="M90 171.13L90 213.13" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M610 171.13L610 213.13" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M90 207.13L610 207.13" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
+<path d="M90 207.13L99 203.93L99 210.33Z" fill="#111418"/>
+<path d="M610 207.13L601 210.33L601 203.93Z" fill="#111418"/>
+<rect x="334.3" y="198.63" width="31.4" height="17" fill="#ffffff"/>
+<text x="350" y="212.68" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">130</text>
+<path d="M99.58 193.45L103.97 191.4L107.94 188.63L111.38 185.22L114.17 181.26L116.25 176.89L117.53 172.22L118 167.4L117.63 162.57L116.42 157.88L114.43 153.46L111.71 149.45L108.34 145.98L104.42 143.13L100.07 141.01L95.41 139.66L90.6 139.14L85.77 139.46L81.06 140.6L76.62 142.54L72.58 145.21L69.06 148.54L66.17 152.43L64 156.75L62.6 161.39L62.02 166.2" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M63.69 176.71L56.75 165.06L66.67 163.48Z" fill="#c2378f"/>
+<path d="M92.2 167.13A2.2 2.2 0 1 1 87.8 167.13A2.2 2.2 0 1 1 92.2 167.13" fill="#c2378f"/>
+<rect x="101.7" y="117.11" width="13" height="22" fill="#ffffff"/>
+<text x="103.7" y="132.31" font-family="&quot;Barlow Semi Condensed&quot;, &quot;Arial Narrow&quot;, &quot;Roboto Condensed&quot;, system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="start" fill="#c2378f">ω</text>
+<path d="M564.49 167.13L503.83 167.13" fill="none" stroke="#c2378f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M492.49 167.13L505.09 162.11L505.09 172.15Z" fill="#c2378f"/>
+<rect x="567.49" y="156.13" width="13" height="22" fill="#ffffff"/>
+<text x="569.49" y="171.33" font-family="&quot;Barlow Semi Condensed&quot;, &quot;Arial Narrow&quot;, &quot;Roboto Condensed&quot;, system-ui, sans-serif" font-size="14" font-weight="600" text-anchor="start" fill="#c2378f">F</text>
+<path d="M90 167.13L79 184.73L101 184.73Z" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M73.5 184.73L106.5 184.73" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M73.5 184.73L67.78 191.33" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M79 184.73L73.28 191.33" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M84.5 184.73L78.78 191.33" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M90 184.73L84.28 191.33" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M95.5 184.73L89.78 191.33" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M101 184.73L95.28 191.33" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M106.5 184.73L100.78 191.33" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M92.6 167.13A2.6 2.6 0 1 1 87.4 167.13A2.6 2.6 0 1 1 92.6 167.13" fill="#ffffff"/>
+<path d="M92.6 167.13A2.6 2.6 0 1 1 87.4 167.13A2.6 2.6 0 1 1 92.6 167.13" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

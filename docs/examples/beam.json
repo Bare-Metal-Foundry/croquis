@@ -1,0 +1,108 @@
+{
+  "name": "Simply supported beam",
+  "units": "mm",
+  "entities": [
+    {
+      "id": "beam",
+      "type": "line",
+      "from": [
+        0,
+        0
+      ],
+      "to": [
+        1000,
+        0
+      ],
+      "style": {
+        "width": 3.2
+      }
+    },
+    {
+      "id": "p",
+      "type": "point",
+      "at": [
+        650,
+        0
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "coincident",
+      "refs": [
+        "beam.start",
+        "origin"
+      ]
+    },
+    {
+      "type": "horizontal",
+      "refs": [
+        "beam"
+      ]
+    },
+    {
+      "type": "on",
+      "refs": [
+        "p",
+        "beam"
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "type": "length",
+      "refs": [
+        "beam"
+      ],
+      "value": 1000,
+      "offset": -120
+    },
+    {
+      "type": "horizontal",
+      "refs": [
+        "origin",
+        "p"
+      ],
+      "value": 650,
+      "offset": -80
+    }
+  ],
+  "notes": [
+    {
+      "type": "support",
+      "at": "beam.start",
+      "kind": "pin",
+      "angle": 90
+    },
+    {
+      "type": "support",
+      "at": "beam.end",
+      "kind": "roller",
+      "angle": 90
+    },
+    {
+      "type": "load",
+      "from": "beam.start",
+      "to": "p",
+      "q": 60,
+      "text": "q = 2 kN/m"
+    },
+    {
+      "type": "force",
+      "at": "beam@0.85",
+      "angle": -90,
+      "length": 140,
+      "push": true,
+      "text": "F = 5 kN"
+    },
+    {
+      "type": "text",
+      "at": [
+        500,
+        -200
+      ],
+      "text": "Reactions: R_1, R_2",
+      "leader": false
+    }
+  ]
+}

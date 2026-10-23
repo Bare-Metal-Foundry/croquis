@@ -1,0 +1,31 @@
+{
+  "name": "Bracket plate",
+  "units": "mm",
+  "entities": [
+    { "id": "plate", "type": "rect", "from": [0, 0], "to": [80, 50], "style": { "fill": "blue", "fillOpacity": 0.15 } },
+    { "id": "hole1", "type": "circle", "center": [12, 12], "d": 6.6, "style": { "fill": "blue", "fillOpacity": 0.15 } },
+    { "id": "hole2", "type": "circle", "center": [68, 12], "d": 6.6, "style": { "fill": "blue", "fillOpacity": 0.15 } },
+    { "id": "slot", "type": "slot", "from": [28, 33], "to": [52, 33], "width": 8 }
+  ],
+  "relations": [
+    { "type": "coincident", "refs": ["plate.bl", "origin"] },
+    { "type": "equal", "refs": ["hole1", "hole2"] },
+    { "type": "horizontal", "refs": ["hole1.center", "hole2.center"] },
+    { "type": "horizontal", "refs": ["slot.axis"] }
+  ],
+  "dimensions": [
+    { "type": "length", "refs": ["plate.bottom"], "value": 80, "offset": -10 },
+    { "type": "length", "refs": ["plate.right"], "value": 50, "offset": -10 },
+    { "type": "diameter", "refs": ["hole1"], "value": 6.6 },
+    { "type": "horizontal", "refs": ["origin", "hole1.center"], "value": 12, "offset": -5 },
+    { "type": "vertical", "refs": ["origin", "hole1.center"], "value": 12, "offset": 5 },
+    { "type": "horizontal", "refs": ["hole2.center", "plate.br"], "value": 12, "offset": -5 },
+    { "type": "horizontal", "refs": ["origin", "slot.c1"], "value": 28, "offset": 30 },
+    { "type": "length", "refs": ["slot.axis"], "value": 24, "offset": 8 },
+    { "type": "vertical", "refs": ["origin", "slot.c1"], "value": 33, "offset": -45 },
+    { "type": "radius", "refs": ["slot.end2"], "value": 4 }
+  ],
+  "notes": [
+    { "type": "text", "at": "plate.top@0.85", "text": "4 mm aluminium, 2 × ⌀6.6 through", "offset": [-10, 10] }
+  ]
+}

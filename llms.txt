@@ -1,0 +1,26 @@
+# Croquis
+
+> Croquis is a free, browser-based tool for quick constrained 2D sketches and schematics: lines, arcs and circles tied together by relations (horizontal, tangent, coincident…) and dimensions, solved like a CAD sketcher, plus engineering annotations (forces, torques, supports, springs, loads). Sketches export to SVG, PDF, PNG, DXF and TikZ/LaTeX. A zero-dependency Node.js CLI and library (`croquis.mjs`) runs the same solver and renderer headlessly, so scripts and AI agents can generate geometrically exact figures from a JSON description and get a rigorous report (fully defined / degrees of freedom / conflicting constraints). Use it instead of writing a new sketcher or hand-drawing SVG.
+
+- Web app: https://bare-metal-foundry.github.io/croquis/
+- Source code: https://github.com/Bare-Metal-Foundry/croquis
+- License: PolyForm Noncommercial 1.0.0 (free for personal and noncommercial use; commercial use needs the author's approval: https://www.linkedin.com/in/stepane-binon/)
+- Author: Stépane Binon
+
+## Docs
+
+- [Headless API and JSON description format](https://github.com/Bare-Metal-Foundry/croquis/blob/main/docs/API.md): entities, relations, dimensions, notes, measures, sheets, CLI options, exit codes, library use.
+- [README](https://github.com/Bare-Metal-Foundry/croquis/blob/main/README.md): features of the web app, sharing and embedding, TikZ in LaTeX.
+
+## Quick start for agents
+
+- Run without installing: `npx github:Bare-Metal-Foundry/croquis build spec.json --svg out.svg --pdf out.pdf --tikz out.tex --require-full` (Node.js 18+).
+- Get a starting description: `npx github:Bare-Metal-Foundry/croquis example`.
+- Read the JSON report on stdout: `status` must be "fully defined" for an exact figure; `problems` names each conflicting relation or dimension by its index.
+- `--link` returns a URL that opens the figure in the web app, where a person can drag it and edit it.
+
+## Examples
+
+- [Crank and slider mechanism](https://github.com/Bare-Metal-Foundry/croquis/blob/main/docs/examples/crank-slider.json)
+- [Bracket plate with holes and a slot](https://github.com/Bare-Metal-Foundry/croquis/blob/main/docs/examples/bracket-plate.json)
+- [Simply supported beam with loads](https://github.com/Bare-Metal-Foundry/croquis/blob/main/docs/examples/beam.json)

@@ -1,0 +1,144 @@
+{
+  "name": "Crank and slider",
+  "units": "mm",
+  "entities": [
+    {
+      "id": "crank",
+      "type": "line",
+      "from": [
+        0,
+        0
+      ],
+      "to": [
+        25,
+        15
+      ]
+    },
+    {
+      "id": "rod",
+      "type": "line",
+      "from": [
+        25,
+        15
+      ],
+      "to": [
+        90,
+        0
+      ]
+    },
+    {
+      "id": "rail",
+      "type": "line",
+      "from": [
+        -10,
+        0
+      ],
+      "to": [
+        120,
+        0
+      ],
+      "construction": true
+    }
+  ],
+  "relations": [
+    {
+      "type": "coincident",
+      "refs": [
+        "crank.start",
+        "origin"
+      ]
+    },
+    {
+      "type": "coincident",
+      "refs": [
+        "crank.end",
+        "rod.start"
+      ]
+    },
+    {
+      "type": "coincident",
+      "refs": [
+        "rail.start",
+        "origin"
+      ]
+    },
+    {
+      "type": "horizontal",
+      "refs": [
+        "rail"
+      ]
+    },
+    {
+      "type": "on",
+      "refs": [
+        "rod.end",
+        "rail"
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "type": "length",
+      "refs": [
+        "crank"
+      ],
+      "value": 30
+    },
+    {
+      "type": "length",
+      "refs": [
+        "rod"
+      ],
+      "value": 80
+    },
+    {
+      "type": "angle",
+      "refs": [
+        "rail",
+        "crank"
+      ],
+      "value": 40
+    },
+    {
+      "type": "length",
+      "refs": [
+        "rail"
+      ],
+      "value": 130,
+      "offset": -10
+    }
+  ],
+  "notes": [
+    {
+      "type": "moment",
+      "at": "crank.start",
+      "radius": 7,
+      "angle": 200,
+      "text": "ω"
+    },
+    {
+      "type": "force",
+      "at": "rod.end",
+      "angle": 180,
+      "length": 18,
+      "push": true,
+      "text": "F"
+    },
+    {
+      "type": "support",
+      "at": "origin",
+      "kind": "pin",
+      "angle": 90
+    }
+  ],
+  "measure": [
+    {
+      "name": "slider position",
+      "type": "horizontal",
+      "refs": [
+        "origin",
+        "rod.end"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "croquis",
+  "version": "1.0.0",
+  "description": "Constrained 2D sketches and schematics: SolidWorks-style relations and dimensions, a solver that checks the sketch is fully defined, and SVG / PDF / TikZ export. Web app plus a zero-dependency CLI and library for scripts and AI agents.",
+  "keywords": [
+    "sketch", "2d", "constraint-solver", "geometric-constraints", "parametric", "cad", "schematic", "diagram",
+    "engineering-drawing", "mechanism", "free-body-diagram", "dimensioning", "svg", "pdf", "tikz", "latex",
+    "dxf", "figure-generation", "ai-agents", "llm-tools", "cli"
+  ],
+  "homepage": "https://bare-metal-foundry.github.io/croquis/",
+  "repository": { "type": "git", "url": "git+https://github.com/Bare-Metal-Foundry/croquis.git" },
+  "bugs": { "url": "https://github.com/Bare-Metal-Foundry/croquis/issues" },
+  "author": "Stépane Binon (https://www.linkedin.com/in/stepane-binon/)",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "type": "module",
+  "main": "./croquis.mjs",
+  "exports": { ".": "./croquis.mjs" },
+  "bin": { "croquis": "croquis.mjs" },
+  "files": ["index.html", "croquis.mjs", "README.md", "LICENSE.md", "llms.txt", "docs/API.md", "docs/examples/"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "example": "node croquis.mjs example | node croquis.mjs build - --svg example.svg --require-full"
+  }
+}
