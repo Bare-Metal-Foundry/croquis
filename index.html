@@ -102,9 +102,25 @@ svg.i.sm { width: 18px; height: 18px; }
 .band { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
 /* ---------- top bar ---------- */
-.topbar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr); align-items: center; gap: 12px; padding-block: 2px; min-width: 0; }
-.topbar .brand { justify-self: start; }
-.topbar .actions { justify-self: end; }
+/* Full-height layout: no bar above or below the sheet. The left column
+   holds the file controls, the panel and the open drawings; the right
+   column holds the tools and the view controls. */
+.lcol, .rcol { display: flex; flex-direction: column; gap: 6px; min-height: 0; min-width: 0; }
+.rcol { width: 78px; }
+.topbar { display: flex; flex-direction: column; gap: 4px; padding: 6px 6px 4px; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; flex: none; }
+.tb-row { display: flex; align-items: center; gap: 0; min-width: 0; }
+.topbar .grow, .actions .grow { flex: 1; }
+.topbar .doc { justify-content: flex-start; padding: 0 2px; }
+.topbar .doc-name { text-align: left; }
+.lcol .menu { left: 0; right: auto; }
+.drawings { display: flex; flex-direction: column; flex: none; max-height: 30vh; min-height: 0; padding: 4px; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; }
+.dr-head { padding: 2px 6px 4px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.lcol > .credit { flex: none; align-self: center; font: 11.5px var(--font-ui); padding: 0 4px 2px; }
+.fview { flex: none; flex-wrap: wrap; justify-content: center; padding: 4px; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; }
+.fview .zoom { flex-basis: 100%; min-width: 0; padding: 2px 0 0; text-align: center; font: 10px var(--font-num); letter-spacing: -0.02em; white-space: nowrap; color: var(--ink-soft); }
+.fview .funits { flex-basis: 100%; margin-bottom: 2px; }
+.viewbar { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 40; max-width: calc(100% - 32px); border: 1px solid var(--rule); border-radius: 10px; box-shadow: 0 8px 24px var(--shadow); padding-inline: 12px 6px; }
+body.viewer .lcol, body.viewer .rcol { display: none !important; }
 .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; letter-spacing: 0.01em; white-space: nowrap; padding: 2px 6px 2px 2px; margin-left: -2px; border: 0; border-radius: 7px; background: transparent; }
 .brand:hover { background: var(--hover-bg); }
 /* Wordmark: Unbounded, loaded for these eight letters only. */
@@ -122,9 +138,9 @@ svg.i.sm { width: 18px; height: 18px; }
 .doc-name:focus { border-color: var(--select); background: var(--field); outline: none; }
 .save-state { font: 12px var(--font-ui); color: var(--ink-soft); white-space: nowrap; }
 .save-state.dirty::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--hover); margin-right: 6px; vertical-align: 1px; }
-.actions { display: flex; flex-wrap: nowrap; align-items: center; gap: 2px; }
-/* the centered sketch name leaves the buttons half the width: labels only on wide windows */
-@media (max-width: 1500px) { .ab .lbl { display: none; } .ab { padding: 0 7px; } }
+.actions { display: flex; flex-wrap: nowrap; align-items: center; gap: 0; }
+.topbar .ab .lbl { display: none; }
+.topbar .ab { padding: 0 6px; height: 28px; }
 .ab {
   display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px;
   border: 1px solid transparent; border-radius: 6px; background: transparent; font-weight: 500; white-space: nowrap;
@@ -142,20 +158,21 @@ svg.i.sm { width: 18px; height: 18px; }
 .menu .ext { font: 11.5px var(--font-num); color: var(--ink-soft); }
 
 /* ---------- document tabs, in the footer like sheet tabs ---------- */
-.doctabs { display: flex; align-items: flex-start; align-self: stretch; gap: 2px; flex: 1 1 auto; min-width: 90px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; font: 13px var(--font-ui); }
+.doctabs { display: flex; flex-direction: column; gap: 1px; flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; font: 13px var(--font-ui); }
 .doctabs::-webkit-scrollbar { display: none; }
 .dtab {
-  display: flex; align-items: center; gap: 4px; height: 21px; max-width: 220px; min-width: 0; padding: 0 3px 0 10px; flex: none;
-  border: 1px solid transparent; border-top: 0; border-radius: 0 0 6px 6px; background: transparent; color: var(--ink-soft); cursor: pointer; user-select: none;
+  display: flex; align-items: center; gap: 6px; height: 28px; min-width: 0; padding: 0 3px 0 10px; flex: none;
+  border: 0; border-radius: 6px; background: transparent; color: var(--ink-soft); cursor: pointer; user-select: none;
 }
 .dtab:hover { background: var(--hover-bg); color: var(--ink); }
-.dtab[aria-selected="true"] { background: var(--panel); border-color: var(--rule); color: var(--ink); box-shadow: inset 0 -2px 0 var(--select); }
+.dtab[aria-selected="true"] { background: var(--active-bg); color: var(--ink); box-shadow: inset 3px 0 0 var(--select); }
+.dtab .dt-name { flex: 1; }
 .dtab .dt-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; font-size: 13.5px; }
 .dtab .dt-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hover); flex: none; }
 .dtab .dt-x { display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 5px; background: transparent; color: var(--ink-soft); flex: none; }
 .dtab .dt-x:hover { background: var(--hover-bg); color: var(--over); }
 .dtab .dt-x svg { width: 14px; height: 14px; }
-.dtab-new { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 21px; border: 0; border-radius: 6px; background: transparent; color: var(--ink-soft); flex: none; }
+.dtab-new { display: inline-flex; align-items: center; justify-content: flex-start; gap: 6px; width: 100%; padding-left: 8px; height: 28px; font: 13px var(--font-ui); border: 0; border-radius: 6px; background: transparent; color: var(--ink-soft); flex: none; }
 .dtab-new:hover { background: var(--hover-bg); color: var(--ink); }
 
 /* ---------- viewer and embed modes ---------- */
@@ -210,7 +227,7 @@ input[type="range"] { width: 100%; accent-color: var(--select); }
 /* ---------- ribbon (CommandManager) ---------- */
 /* Toolbar: a column on the right of the sheet, two tools per row, with
    the Sketch / Notes switch on top. */
-.ribbon { display: flex; flex-direction: column; width: 78px; min-height: 0; padding: 4px; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); overflow: hidden; }
+.ribbon { display: flex; flex-direction: column; flex: 1 1 auto; width: 78px; min-height: 0; padding: 4px; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); overflow: hidden; }
 .ribbon-scroll { flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; overscroll-behavior: contain; }
 .ribbon-tabs { order: -1; display: flex; flex-direction: column; gap: 2px; flex: none; padding: 0 0 4px; margin-bottom: 2px; border-bottom: 1px solid var(--rule); }
 .rtab { flex: none; height: 24px; padding: 0 4px; border: 0; border-radius: 6px; background: transparent; font-weight: 600; font-size: 12px; letter-spacing: 0.04em; color: var(--ink-soft); }
@@ -232,8 +249,8 @@ input[type="range"] { width: 100%; accent-color: var(--select); }
 .only-narrow { display: none; }
 
 /* ---------- main: PropertyManager + sheet ---------- */
-.main { position: relative; display: grid; grid-template-columns: 284px minmax(0, 1fr) auto; gap: 10px; padding-block: 10px; min-height: 0; }
-.pm { display: flex; flex-direction: column; min-height: 0; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.main { position: relative; display: grid; grid-template-columns: 284px minmax(0, 1fr) auto; gap: 6px; padding: 6px; min-height: 0; }
+.pm { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
 .pm-head { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid var(--rule); min-height: 38px; }
 /* one side panel, two views: Properties and Browser */
 .ptabs { display: flex; align-items: flex-end; gap: 2px; padding: 4px 4px 0; border-bottom: 1px solid var(--rule); flex: none; }
@@ -309,7 +326,7 @@ body.no-help .help, body.no-help .sb-empty, body.no-help .note-line { display: n
 .fbtn:hover { background: var(--hover-bg); color: var(--ink); }
 .fbtn[aria-pressed="true"] { background: var(--active-bg); color: var(--select-ink); }
 .fbtn svg { width: 16px; height: 16px; }
-.fbtn.funits { width: auto; padding: 0 6px; font: 12px var(--font-num); color: var(--ink); border: 1px solid var(--rule); }
+.fbtn.funits { width: auto; height: 22px; padding: 0 6px; font: 12px var(--font-num); color: var(--ink); border: 1px solid var(--rule); }
 .dirty-star { margin-left: -4px; font-weight: 600; font-size: 17px; color: var(--hover); cursor: help; }
 .fview .zoom { min-width: 76px; padding-left: 6px; text-align: right; }
 
@@ -350,6 +367,9 @@ body.no-help .help, body.no-help .sb-empty, body.no-help .note-line { display: n
 .backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: rgba(10, 14, 18, 0.42); }
 .dialog { width: min(760px, 100%); max-height: 100%; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; box-shadow: 0 20px 50px var(--shadow); overflow: hidden; }
 .dialog.small { width: min(420px, 100%); }
+/* a text dialog as wide as its text: no empty band on the right */
+.dialog.narrow { width: min(540px, 100%); }
+.dialog.narrow .dlg-body p { max-width: none; }
 .dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--rule); }
 .dlg-head h2 { margin: 0; font-size: 17px; font-weight: 600; text-wrap: balance; }
 .dlg-body { padding: 14px 16px; overflow-y: auto; min-height: 0; }
@@ -384,6 +404,12 @@ body.no-help .help, body.no-help .sb-empty, body.no-help .note-line { display: n
 .sb-name { flex: 1; min-width: 0; padding-left: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
 .sb-name input { width: 100%; font: inherit; padding: 2px 5px; border: 1px solid var(--select); border-radius: 4px; background: var(--field); outline: none; }
 .sb-count { font: 11.5px var(--font-num); color: var(--ink-soft); min-width: 16px; text-align: right; padding-right: 2px; }
+/* a group shows how many items it holds only while it is selected */
+.sb-row[data-gid] .sb-count { visibility: hidden; }
+.sb-row[data-gid][aria-selected="true"] .sb-count { visibility: visible; }
+/* same for note layers: the count shows on the layer just clicked, or on the layer of the selected notes */
+.sb-row[data-lid] .sb-count { visibility: hidden; }
+.sb-row[data-lid][aria-selected="true"] .sb-count { visibility: visible; }
 .chip { width: 16px; height: 16px; flex: none; padding: 0; margin: 0 3px; border-radius: 4px; border: 1px solid var(--rule); background: var(--c, transparent); }
 .chip.none { background: linear-gradient(135deg, transparent 44%, var(--ink-soft) 45% 55%, transparent 56%); }
 .radio-dot { width: 14px; height: 14px; margin: 0 4px 0 5px; border-radius: 50%; border: 1.5px solid var(--ink-soft); flex: none; }
@@ -461,8 +487,22 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
   #sheetInfo { display: none; }
 }
 @media (max-width: 760px) {
-  .main { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 8px; }
-  .ribbon { grid-row: 1; flex-direction: row; width: auto; padding: 0; }
+  .main { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: "top top" "tools tools" "stage stage" "tabs view"; gap: 6px; }
+  .lcol, .rcol { display: contents; }
+  .topbar { grid-area: top; flex-direction: row; align-items: center; }
+  .topbar .doc, .lcol > .credit, .dr-head { display: none; }
+  .tb-row .grow { display: none; }
+  .actions { flex: 1; justify-content: flex-end; }
+  .drawings { grid-area: tabs; max-height: none; padding: 2px; }
+  .doctabs { flex-direction: row; overflow-x: auto; overflow-y: hidden; }
+  .dtab { max-width: 150px; }
+  .dtab-new { width: 30px; padding: 0; justify-content: center; }
+  .dtab-new .lbl-new { display: none; }
+  .fview { grid-area: view; flex-wrap: nowrap; }
+  .fview .zoom, .fview .funits { flex-basis: auto; margin: 0; }
+  .fview .zoom { display: none; }
+  .stage { grid-area: stage; }
+  .ribbon { grid-area: tools; flex-direction: row; width: auto; padding: 0; }
   .ribbon-scroll { overflow-x: auto; overflow-y: hidden; }
   .ribbon-tabs { flex-direction: column; justify-content: center; gap: 3px; padding: 4px; margin: 0; border-bottom: 0; border-right: 1px solid var(--rule); }
   .rtab { flex: none; height: 24px; }
@@ -474,7 +514,6 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
   .grp-btns { display: flex; gap: 1px; }
   .grp-label { order: 0; text-align: center; padding: 1px 0 0; }
   .tb { width: 58px; height: 46px; white-space: nowrap; overflow-wrap: normal; }
-  .stage { grid-row: 2; }
   #selInfo { display: none; }
   .pm {
     position: absolute; z-index: 15; top: 10px; bottom: 10px; left: max(16px, env(safe-area-inset-left, 0px));
@@ -492,9 +531,6 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
   .ab { padding: 0 5px; }
   .actions { flex-wrap: nowrap; gap: 0; }
   .topbar { gap: 6px; }
-  .topbar { display: flex; }
-  .doc { display: none; }
-  .topbar .actions { margin-left: auto; }
   .save-state { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .pm { transition: none; } }
@@ -575,7 +611,6 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
     <symbol id="i-gridlines" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16" opacity=".7"/></symbol>
     <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
     <symbol id="i-shrink" viewBox="0 0 24 24"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></symbol>
-    <symbol id="i-theme-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.8"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M5.6 18.4l1.6-1.6M16.8 7.2l1.6-1.6"/></symbol>
     <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A7.8 7.8 0 0 1 9.5 4.5a7.8 7.8 0 1 0 10 10z"/></symbol>
     <symbol id="i-offset" viewBox="0 0 24 24"><path d="M4 19V10a5 5 0 0 1 5-5h11"/><path d="M8 19v-8a1.8 1.8 0 0 1 1.8-1.8H20" stroke-dasharray="2.4 1.8"/></symbol>
@@ -591,52 +626,6 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
 </svg>
 
 <div class="app" id="app">
-  <header class="topbar band">
-    <button class="brand" id="btnBrand" type="button" title="About Croquis"><svg aria-hidden="true"><use href="#i-brand"/></svg><span class="word">CROQUIS<span class="dot">.</span></span></button>
-    <div class="doc">
-      <input id="docName" class="doc-name" type="text" value="" aria-label="Sketch name" spellcheck="false" autocomplete="off">
-      <span class="dirty-star" id="dirtyStar" hidden aria-label="unsaved changes">*</span>
-    </div>
-    <div class="actions">
-      <button class="ab" id="btnNew" title="New sketch"><svg class="i sm"><use href="#i-new"/></svg><span class="lbl">New</span></button>
-      <button class="ab" id="btnOpen" title="Open a saved sketch (Ctrl+O)"><svg class="i sm"><use href="#i-open"/></svg><span class="lbl">Open</span></button>
-      <button class="ab" id="btnSave" title="Save (Ctrl+S)"><svg class="i sm"><use href="#i-save"/></svg><span class="lbl">Save</span></button>
-      <div class="menu-wrap">
-        <button class="ab" id="btnExport" aria-haspopup="menu" aria-expanded="false" title="Export or import a file"><svg class="i sm"><use href="#i-export"/></svg><span class="lbl">File</span><svg class="i sm"><use href="#i-chev"/></svg></button>
-        <div class="menu" id="exportMenu" role="menu" hidden>
-          <button role="menuitem" data-act="share">Share a link or embed <span class="ext">view · edit · iframe</span></button>
-          <button role="menuitem" data-act="saveas">Save as copy <span class="ext"></span></button>
-          <button role="menuitem" data-act="json">Export sketch <span class="ext">.json</span></button>
-          <button role="menuitem" data-act="pdf">Export PDF drawing <span class="ext">.pdf</span></button>
-          <button role="menuitem" data-act="svg">Export drawing <span class="ext">.svg</span></button>
-          <button role="menuitem" data-act="png">Export image <span class="ext">.png</span></button>
-          <button role="menuitem" data-act="dxf">Export for CAD <span class="ext">.dxf</span></button>
-          <button role="menuitem" data-act="tikz">Export for LaTeX <span class="ext">TikZ .tex</span></button>
-          <button role="menuitem" data-act="import">Import file <span class="ext">.json .dxf</span></button>
-          <button role="menuitem" data-act="picture">Insert a picture to trace <span class="ext">.png .jpg</span></button>
-          <button role="menuitem" data-act="sheet">Drawing sheet and title block <span class="ext"></span></button>
-          <button role="menuitem" data-act="example">Open the example sketch <span class="ext"></span></button>
-        </div>
-      </div>
-      <button class="ab icon-only" id="btnFull" type="button" title="Full screen" aria-label="Full screen" aria-pressed="false"><svg class="i sm"><use href="#i-expand"/></svg></button>
-      <button class="ab icon-only" id="btnTheme" type="button" title="Theme: follows your system" aria-label="Theme: follows your system"><svg class="i sm"><use href="#i-theme-auto"/></svg></button>
-      <div class="menu-wrap">
-        <button class="ab icon-only" id="btnHelp" aria-haspopup="menu" aria-expanded="false" title="Help, feedback and credits" aria-label="Help"><svg class="i sm"><use href="#i-help"/></svg></button>
-        <div class="menu" id="helpMenu" role="menu" hidden>
-          <button role="menuitem" data-act="about">About Croquis <span class="ext"></span></button>
-          <button role="menuitem" data-act="keys">Keyboard shortcuts <span class="ext"></span></button>
-          <button role="menuitem" data-act="helptexts" id="miHelpTexts">Hide tutorial texts <span class="ext"></span></button>
-          <button role="menuitem" data-act="feature">Request a feature <span class="ext">GitHub</span></button>
-          <button role="menuitem" data-act="design">Suggest a design improvement <span class="ext">GitHub</span></button>
-          <button role="menuitem" data-act="bug">Report a bug <span class="ext">GitHub</span></button>
-        </div>
-      </div>
-      <button class="ab icon-only" id="btnUndo" title="Undo (Ctrl+Z)" aria-label="Undo"><svg class="i sm"><use href="#i-undo"/></svg></button>
-      <button class="ab icon-only" id="btnRedo" title="Redo (Ctrl+Y)" aria-label="Redo"><svg class="i sm"><use href="#i-redo"/></svg></button>
-    </div>
-    <input type="file" id="fileInput" accept=".json,.dxf,application/json" hidden>
-    <input type="file" id="pictureInput" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/svg+xml" hidden>
-  </header>
 
   <div class="viewbar band" id="viewBar" hidden>
     <svg class="i sm" aria-hidden="true"><use href="#i-eye"/></svg>
@@ -649,23 +638,80 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
 
 
   <main class="main band">
-    <aside class="pm" id="pm" aria-label="Properties and Browser">
-      <div class="ptabs" role="tablist" aria-label="Panel">
-        <button class="ptab" type="button" role="tab" id="ptabProps" aria-selected="true" aria-controls="pviewProps" data-ptab="props"><svg class="i sm" aria-hidden="true"><use href="#i-panel"/></svg>Properties</button>
-        <button class="ptab" type="button" role="tab" id="ptabBrowser" aria-selected="false" aria-controls="pviewBrowser" data-ptab="browser" title="Groups, note layers, variables and pictures"><svg class="i sm" aria-hidden="true"><use href="#i-side"/></svg>Browser</button>
-        <button class="ab icon-only pm-close" id="pmClose" aria-label="Close panel"><svg class="i sm"><use href="#i-x"/></svg></button>
-      </div>
-      <div class="pview" id="pviewProps" role="tabpanel" aria-labelledby="ptabProps">
-        <div class="pm-head">
-          <svg class="i sm" id="pmIcon"><use href="#i-select"/></svg>
-          <h2 id="pmTitle">Sketch</h2>
+    <div class="lcol">
+      <header class="topbar" aria-label="Croquis">
+        <div class="tb-row">
+          <button class="brand" id="btnBrand" type="button" title="About Croquis"><svg aria-hidden="true"><use href="#i-brand"/></svg><span class="word">CROQUIS<span class="dot">.</span></span></button>
+          <span class="grow"></span>
+          <button class="ab icon-only" id="btnFull" type="button" title="Full screen" aria-label="Full screen" aria-pressed="false"><svg class="i sm"><use href="#i-expand"/></svg></button>
+          <button class="ab icon-only" id="btnTheme" type="button" title="Light or dark theme" aria-label="Light or dark theme"><svg class="i sm"><use href="#i-moon"/></svg></button>
+          <div class="menu-wrap">
+            <button class="ab icon-only" id="btnHelp" aria-haspopup="menu" aria-expanded="false" title="Help, feedback and credits" aria-label="Help"><svg class="i sm"><use href="#i-help"/></svg></button>
+            <div class="menu" id="helpMenu" role="menu" hidden>
+              <button role="menuitem" data-act="about">About Croquis <span class="ext"></span></button>
+              <button role="menuitem" data-act="keys">Keyboard shortcuts <span class="ext"></span></button>
+              <button role="menuitem" data-act="helptexts" id="miHelpTexts">Hide tutorial texts <span class="ext"></span></button>
+              <button role="menuitem" data-act="feature">Request a feature <span class="ext">GitHub</span></button>
+              <button role="menuitem" data-act="design">Suggest a design improvement <span class="ext">GitHub</span></button>
+              <button role="menuitem" data-act="bug">Report a bug <span class="ext">GitHub</span></button>
+            </div>
+          </div>
         </div>
-        <div class="pm-body" id="pmBody"></div>
-      </div>
-      <div class="pview" id="pviewBrowser" role="tabpanel" aria-labelledby="ptabBrowser" hidden>
-        <div class="side-body" id="sideBody"></div>
-      </div>
-    </aside>
+        <div class="doc">
+          <input id="docName" class="doc-name" type="text" value="" aria-label="Sketch name" spellcheck="false" autocomplete="off">
+          <span class="dirty-star" id="dirtyStar" hidden aria-label="unsaved changes">*</span>
+        </div>
+        <div class="actions">
+          <button class="ab" id="btnNew" title="New sketch"><svg class="i sm"><use href="#i-new"/></svg><span class="lbl">New</span></button>
+          <button class="ab" id="btnOpen" title="Open a saved sketch (Ctrl+O)"><svg class="i sm"><use href="#i-open"/></svg><span class="lbl">Open</span></button>
+          <button class="ab" id="btnSave" title="Save (Ctrl+S)"><svg class="i sm"><use href="#i-save"/></svg><span class="lbl">Save</span></button>
+          <div class="menu-wrap">
+            <button class="ab" id="btnExport" aria-haspopup="menu" aria-expanded="false" title="Export or import a file"><svg class="i sm"><use href="#i-export"/></svg><span class="lbl">File</span><svg class="i sm"><use href="#i-chev"/></svg></button>
+            <div class="menu" id="exportMenu" role="menu" hidden>
+              <button role="menuitem" data-act="share">Share a link or embed <span class="ext">view · edit · iframe</span></button>
+              <button role="menuitem" data-act="saveas">Save as copy <span class="ext"></span></button>
+              <button role="menuitem" data-act="json">Export sketch <span class="ext">.json</span></button>
+              <button role="menuitem" data-act="pdf">Export PDF drawing <span class="ext">.pdf</span></button>
+              <button role="menuitem" data-act="svg">Export drawing <span class="ext">.svg</span></button>
+              <button role="menuitem" data-act="png">Export image <span class="ext">.png</span></button>
+              <button role="menuitem" data-act="dxf">Export for CAD <span class="ext">.dxf</span></button>
+              <button role="menuitem" data-act="tikz">Export for LaTeX <span class="ext">TikZ .tex</span></button>
+              <button role="menuitem" data-act="import">Import file <span class="ext">.json .dxf</span></button>
+              <button role="menuitem" data-act="picture">Insert a picture to trace <span class="ext">.png .jpg</span></button>
+              <button role="menuitem" data-act="sheet">Drawing sheet and title block <span class="ext"></span></button>
+              <button role="menuitem" data-act="example">Open the example sketch <span class="ext"></span></button>
+            </div>
+          </div>
+          <span class="grow"></span>
+          <button class="ab icon-only" id="btnUndo" title="Undo (Ctrl+Z)" aria-label="Undo"><svg class="i sm"><use href="#i-undo"/></svg></button>
+          <button class="ab icon-only" id="btnRedo" title="Redo (Ctrl+Y)" aria-label="Redo"><svg class="i sm"><use href="#i-redo"/></svg></button>
+        </div>
+        <input type="file" id="fileInput" accept=".json,.dxf,application/json" hidden>
+        <input type="file" id="pictureInput" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/svg+xml" hidden>
+      </header>
+      <aside class="pm" id="pm" aria-label="Properties and Browser">
+        <div class="ptabs" role="tablist" aria-label="Panel">
+          <button class="ptab" type="button" role="tab" id="ptabProps" aria-selected="true" aria-controls="pviewProps" data-ptab="props"><svg class="i sm" aria-hidden="true"><use href="#i-panel"/></svg>Properties</button>
+          <button class="ptab" type="button" role="tab" id="ptabBrowser" aria-selected="false" aria-controls="pviewBrowser" data-ptab="browser" title="Groups, note layers, variables and pictures"><svg class="i sm" aria-hidden="true"><use href="#i-side"/></svg>Browser</button>
+          <button class="ab icon-only pm-close" id="pmClose" aria-label="Close panel"><svg class="i sm"><use href="#i-x"/></svg></button>
+        </div>
+        <div class="pview" id="pviewProps" role="tabpanel" aria-labelledby="ptabProps">
+          <div class="pm-head">
+            <svg class="i sm" id="pmIcon"><use href="#i-select"/></svg>
+            <h2 id="pmTitle">Sketch</h2>
+          </div>
+          <div class="pm-body" id="pmBody"></div>
+        </div>
+        <div class="pview" id="pviewBrowser" role="tabpanel" aria-labelledby="ptabBrowser" hidden>
+          <div class="side-body" id="sideBody"></div>
+        </div>
+      </aside>
+      <section class="drawings" aria-label="Open drawings">
+        <div class="dr-head">Drawings</div>
+        <div class="doctabs" id="docTabs" role="tablist" aria-label="Open drawings" aria-orientation="vertical"></div>
+      </section>
+      <button class="credit" type="button" id="btnCredit" title="About Croquis, credits and license">Croquis · Stépane Binon</button>
+    </div>
     <section class="stage" id="stage">
       <canvas id="cv" tabindex="0" aria-label="Sketch canvas"></canvas>
       <textarea id="noteEd" class="note-ed" rows="1" spellcheck="true" aria-label="Note text" hidden></textarea>
@@ -682,132 +728,128 @@ textarea.field-text { resize: vertical; min-height: 56px; line-height: 1.35; }
       <div class="ctx" id="ctx" role="menu" hidden></div>
       <div class="toast" id="toast" role="status" hidden></div>
     </section>
-    <nav class="ribbon" aria-label="Tools">
-      <div class="ribbon-scroll">
-      <div class="ribbon-in" id="paneSketch" role="tabpanel" aria-labelledby="tabSketch">
-        <div class="grp only-narrow">
-          <div class="grp-btns"><button class="tb" data-act="panel" title="Show the properties panel"><svg class="i"><use href="#i-panel"/></svg>Properties</button></div>
-          <div class="grp-label">Panel</div>
-        </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" data-tool="select" title="Select and drag (Esc)"><svg class="i"><use href="#i-select"/></svg>Select</button>
+    <div class="rcol">
+      <nav class="ribbon" aria-label="Tools">
+        <div class="ribbon-scroll">
+        <div class="ribbon-in" id="paneSketch" role="tabpanel" aria-labelledby="tabSketch">
+          <div class="grp only-narrow">
+            <div class="grp-btns"><button class="tb" data-act="panel" title="Show the properties panel"><svg class="i"><use href="#i-panel"/></svg>Properties</button></div>
+            <div class="grp-label">Panel</div>
           </div>
-          <div class="grp-label">Pick</div>
-        </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" data-tool="line" title="Line (L)"><svg class="i"><use href="#i-line"/></svg>Line</button>
-            <button class="tb" data-tool="centerline" title="Centerline (Shift+L)"><svg class="i"><use href="#i-centerline"/></svg>Centerline</button>
-            <button class="tb" data-tool="rect" title="Rectangle (R)"><svg class="i"><use href="#i-rect"/></svg>Rectangle</button>
-            <button class="tb" data-tool="circle" title="Circle (C)"><svg class="i"><use href="#i-circle"/></svg>Circle</button>
-            <button class="tb" data-tool="arc" title="Arc (A)"><svg class="i"><use href="#i-arc"/></svg>Arc</button>
-            <button class="tb" data-tool="slot" title="Straight slot"><svg class="i"><use href="#i-slot"/></svg>Slot</button>
-            <button class="tb" data-tool="polygon" title="Polygon"><svg class="i"><use href="#i-polygon"/></svg>Polygon</button>
-            <button class="tb" data-tool="point" title="Point (P)"><svg class="i"><use href="#i-point"/></svg>Point</button>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" data-tool="select" title="Select and drag (Esc)"><svg class="i"><use href="#i-select"/></svg>Select</button>
+            </div>
+            <div class="grp-label">Pick</div>
           </div>
-          <div class="grp-label">Sketch</div>
-        </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" data-tool="dim" title="Smart Dimension (D)"><svg class="i"><use href="#i-dim"/></svg>Smart Dimension</button>
-            <button class="tb" id="btnAddRel" title="Add Relation: select entities, then pick a relation"><svg class="i"><use href="#i-relation"/></svg>Add Relation</button>
-            <button class="tb" id="btnLink" title="Link Values: select two or more dimensions to give them one shared value"><svg class="i"><use href="#i-link"/></svg>Link Values</button>
-            <button class="tb" id="btnEq" title="Equations and global variables"><svg class="i"><use href="#i-sigma"/></svg>Equations</button>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" data-tool="line" title="Line (L)"><svg class="i"><use href="#i-line"/></svg>Line</button>
+              <button class="tb" data-tool="centerline" title="Centerline (Shift+L)"><svg class="i"><use href="#i-centerline"/></svg>Centerline</button>
+              <button class="tb" data-tool="rect" title="Rectangle (R)"><svg class="i"><use href="#i-rect"/></svg>Rectangle</button>
+              <button class="tb" data-tool="circle" title="Circle (C)"><svg class="i"><use href="#i-circle"/></svg>Circle</button>
+              <button class="tb" data-tool="arc" title="Arc (A)"><svg class="i"><use href="#i-arc"/></svg>Arc</button>
+              <button class="tb" data-tool="slot" title="Straight slot"><svg class="i"><use href="#i-slot"/></svg>Slot</button>
+              <button class="tb" data-tool="polygon" title="Polygon"><svg class="i"><use href="#i-polygon"/></svg>Polygon</button>
+              <button class="tb" data-tool="point" title="Point (P)"><svg class="i"><use href="#i-point"/></svg>Point</button>
+            </div>
+            <div class="grp-label">Sketch</div>
           </div>
-          <div class="grp-label">Constrain</div>
-        </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" data-tool="fillet" title="Sketch Fillet (E)"><svg class="i"><use href="#i-fillet"/></svg>Fillet</button>
-            <button class="tb" data-tool="trim" title="Trim to closest (T)"><svg class="i"><use href="#i-trim"/></svg>Trim</button>
-            <button class="tb" data-tool="mirror" title="Mirror Entities (M)"><svg class="i"><use href="#i-mirror"/></svg>Mirror</button>
-            <button class="tb" data-tool="offset" title="Offset Entities (O): copy lines, arcs and circles at a distance"><svg class="i"><use href="#i-offset"/></svg>Offset</button>
-            <button class="tb" id="btnConstruct" title="Toggle construction geometry on the selection (Q)"><svg class="i"><use href="#i-construct"/></svg>Construction</button>
-            <button class="tb" id="btnDelete" title="Delete selection (Del)"><svg class="i"><use href="#i-trash"/></svg>Delete</button>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" data-tool="dim" title="Smart Dimension (D)"><svg class="i"><use href="#i-dim"/></svg>Smart Dimension</button>
+              <button class="tb" id="btnAddRel" title="Add Relation: select entities, then pick a relation"><svg class="i"><use href="#i-relation"/></svg>Add Relation</button>
+              <button class="tb" id="btnLink" title="Link Values: select two or more dimensions to give them one shared value"><svg class="i"><use href="#i-link"/></svg>Link Values</button>
+              <button class="tb" id="btnEq" title="Equations and global variables"><svg class="i"><use href="#i-sigma"/></svg>Equations</button>
+            </div>
+            <div class="grp-label">Constrain</div>
           </div>
-          <div class="grp-label">Modify</div>
-        </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" id="btnGroup" title="Group the selection (Ctrl+G)"><svg class="i"><use href="#i-group"/></svg>Group</button>
-            <button class="tb" data-act="hide" title="Hide or show the selected groups, geometry and dimensions (H). Shift+H shows everything."><svg class="i"><use href="#i-hide"/></svg>Hide/Show</button>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" data-tool="fillet" title="Sketch Fillet (E)"><svg class="i"><use href="#i-fillet"/></svg>Fillet</button>
+              <button class="tb" data-tool="trim" title="Trim to closest (T)"><svg class="i"><use href="#i-trim"/></svg>Trim</button>
+              <button class="tb" data-tool="mirror" title="Mirror Entities (M)"><svg class="i"><use href="#i-mirror"/></svg>Mirror</button>
+              <button class="tb" data-tool="offset" title="Offset Entities (O): copy lines, arcs and circles at a distance"><svg class="i"><use href="#i-offset"/></svg>Offset</button>
+              <button class="tb" id="btnConstruct" title="Toggle construction geometry on the selection (Q)"><svg class="i"><use href="#i-construct"/></svg>Construction</button>
+              <button class="tb" id="btnDelete" title="Delete selection (Del)"><svg class="i"><use href="#i-trash"/></svg>Delete</button>
+            </div>
+            <div class="grp-label">Modify</div>
           </div>
-          <div class="grp-label">Organize</div>
-        </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" data-tool="sheet" title="Drawing sheet: paper format (A4 to A0), scale and title block"><svg class="i"><use href="#i-sheet"/></svg>Sheet</button>
-            <button class="tb" data-act="picture" title="Insert a picture (photo or scan of a sketch) to trace over. You can also paste or drop an image."><svg class="i"><use href="#i-picture"/></svg>Picture</button>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" id="btnGroup" title="Group the selection (Ctrl+G)"><svg class="i"><use href="#i-group"/></svg>Group</button>
+              <button class="tb" data-act="hide" title="Hide or show the selected groups, geometry and dimensions (H). Shift+H shows everything."><svg class="i"><use href="#i-hide"/></svg>Hide/Show</button>
+            </div>
+            <div class="grp-label">Organize</div>
           </div>
-          <div class="grp-label">Drawing</div>
-        </div>
-      </div>
-      <div class="ribbon-in" id="paneNotes" role="tabpanel" aria-labelledby="tabNotes" hidden>
-        <div class="grp only-narrow">
-          <div class="grp-btns"><button class="tb" data-act="panel" title="Show the properties panel"><svg class="i"><use href="#i-panel"/></svg>Properties</button></div>
-          <div class="grp-label">Panel</div>
-        </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" data-tool="select" title="Select and drag (Esc)"><svg class="i"><use href="#i-select"/></svg>Select</button>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" data-tool="sheet" title="Drawing sheet: paper format (A4 to A0), scale and title block"><svg class="i"><use href="#i-sheet"/></svg>Sheet</button>
+              <button class="tb" data-act="picture" title="Insert a picture (photo or scan of a sketch) to trace over. You can also paste or drop an image."><svg class="i"><use href="#i-picture"/></svg>Picture</button>
+            </div>
+            <div class="grp-label">Drawing</div>
           </div>
-          <div class="grp-label">Pick</div>
         </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" data-tool="ntext" title="Text note (N): click to place, or drag from a point to add a leader"><svg class="i"><use href="#i-text"/></svg>Text</button>
+        <div class="ribbon-in" id="paneNotes" role="tabpanel" aria-labelledby="tabNotes" hidden>
+          <div class="grp only-narrow">
+            <div class="grp-btns"><button class="tb" data-act="panel" title="Show the properties panel"><svg class="i"><use href="#i-panel"/></svg>Properties</button></div>
+            <div class="grp-label">Panel</div>
           </div>
-          <div class="grp-label">Annotate</div>
-        </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" data-tool="nforce" title="Force arrow: click the point it acts on, then its direction"><svg class="i"><use href="#i-force"/></svg>Force</button>
-            <button class="tb" data-tool="nmoment" title="Torque or moment: click the center, then where the arrowhead goes"><svg class="i"><use href="#i-torque"/></svg>Torque</button>
-            <button class="tb" data-tool="nload" title="Distributed load: click the start, the end, then the intensity"><svg class="i"><use href="#i-load"/></svg>Distributed</button>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" data-tool="select" title="Select and drag (Esc)"><svg class="i"><use href="#i-select"/></svg>Select</button>
+            </div>
+            <div class="grp-label">Pick</div>
           </div>
-          <div class="grp-label">Loads</div>
-        </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" data-tool="nsupport" title="Support: fixed, pinned or roller"><svg class="i"><use href="#i-support"/></svg>Support</button>
-            <button class="tb" data-tool="nspring" title="Spring between two points"><svg class="i"><use href="#i-spring"/></svg>Spring</button>
-            <button class="tb" data-tool="ndamper" title="Damper between two points"><svg class="i"><use href="#i-damper"/></svg>Damper</button>
-            <button class="tb" data-tool="nframe" title="Coordinate frame"><svg class="i"><use href="#i-frame"/></svg>Frame</button>
-            <button class="tb" data-tool="nmass" title="Center of mass"><svg class="i"><use href="#i-mass"/></svg>Mass</button>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" data-tool="ntext" title="Text note (N): click to place, or drag from a point to add a leader"><svg class="i"><use href="#i-text"/></svg>Text</button>
+            </div>
+            <div class="grp-label">Annotate</div>
           </div>
-          <div class="grp-label">Mechanics</div>
-        </div>
-        <div class="grp">
-          <div class="grp-btns">
-            <button class="tb" data-act="layers" title="Note layers: show, hide, lock and choose where new notes go"><svg class="i"><use href="#i-layers"/></svg>Layers</button>
-            <button class="tb" data-act="hide" title="Hide or show the selection (H). Shift+H shows everything."><svg class="i"><use href="#i-hide"/></svg>Hide/Show</button>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" data-tool="nforce" title="Force arrow: click the point it acts on, then its direction"><svg class="i"><use href="#i-force"/></svg>Force</button>
+              <button class="tb" data-tool="nmoment" title="Torque or moment: click the center, then where the arrowhead goes"><svg class="i"><use href="#i-torque"/></svg>Torque</button>
+              <button class="tb" data-tool="nload" title="Distributed load: click the start, the end, then the intensity"><svg class="i"><use href="#i-load"/></svg>Distributed</button>
+            </div>
+            <div class="grp-label">Loads</div>
           </div>
-          <div class="grp-label">Organize</div>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" data-tool="nsupport" title="Support: fixed, pinned or roller"><svg class="i"><use href="#i-support"/></svg>Support</button>
+              <button class="tb" data-tool="nspring" title="Spring between two points"><svg class="i"><use href="#i-spring"/></svg>Spring</button>
+              <button class="tb" data-tool="ndamper" title="Damper between two points"><svg class="i"><use href="#i-damper"/></svg>Damper</button>
+              <button class="tb" data-tool="nframe" title="Coordinate frame"><svg class="i"><use href="#i-frame"/></svg>Frame</button>
+              <button class="tb" data-tool="nmass" title="Center of mass"><svg class="i"><use href="#i-mass"/></svg>Mass</button>
+            </div>
+            <div class="grp-label">Mechanics</div>
+          </div>
+          <div class="grp">
+            <div class="grp-btns">
+              <button class="tb" data-act="layers" title="Note layers: show, hide, lock and choose where new notes go"><svg class="i"><use href="#i-layers"/></svg>Layers</button>
+              <button class="tb" data-act="hide" title="Hide or show the selection (H). Shift+H shows everything."><svg class="i"><use href="#i-hide"/></svg>Hide/Show</button>
+            </div>
+            <div class="grp-label">Organize</div>
+          </div>
         </div>
-      </div>
-      </div>
-      <div class="ribbon-tabs" role="tablist" aria-label="Toolbars">
-        <button class="rtab" role="tab" id="tabSketch" aria-selected="true" aria-controls="paneSketch" data-tab="sketch">Sketch</button>
-        <button class="rtab" role="tab" id="tabNotes" aria-selected="false" aria-controls="paneNotes" data-tab="notes">Notes</button>
-      </div>
-    </nav>
-  </main>
-  <div class="pop" id="pop" role="dialog" aria-label="Choose a color" hidden></div>
-
-  <footer class="statusbar band">
-    <div class="doctabs" id="docTabs" role="tablist" aria-label="Open drawings"></div>
-    <span id="selInfo"></span>
-    <span id="sheetInfo"></span>
-    <button class="fbtn funits" id="btnUnits" type="button" title="Units of this drawing: click to switch between millimetres and inches">mm</button>
-    <span class="fview" role="group" aria-label="View">
+        </div>
+        <div class="ribbon-tabs" role="tablist" aria-label="Toolbars">
+          <button class="rtab" role="tab" id="tabSketch" aria-selected="true" aria-controls="paneSketch" data-tab="sketch">Sketch</button>
+          <button class="rtab" role="tab" id="tabNotes" aria-selected="false" aria-controls="paneNotes" data-tab="notes">Notes</button>
+        </div>
+      </nav>
+      <div class="fview" role="group" aria-label="View">
+        <button class="fbtn funits" id="btnUnits" type="button" title="Units of this drawing: click to switch between millimetres and inches">mm</button>
       <button class="fbtn" id="btnGrid" type="button" aria-pressed="true" title="Show or hide the grid" aria-label="Grid"><svg class="i sm"><use href="#i-gridlines"/></svg></button>
       <button class="fbtn" id="btnSnap" type="button" aria-pressed="false" title="Snap to grid (G)" aria-label="Snap to grid"><svg class="i sm"><use href="#i-grid"/></svg></button>
       <button class="fbtn" id="btnFit" type="button" title="Zoom to fit (F)" aria-label="Zoom to fit"><svg class="i sm"><use href="#i-fit"/></svg></button>
-      <span class="zoom" id="zoomLbl" title="Zoom: screen pixels per millimetre"></span>
-    </span>
-    <button class="credit" type="button" id="btnCredit" title="About Croquis, credits and license">Croquis · Stépane Binon</button>
-  </footer>
+        <span class="zoom" id="zoomLbl" title="Zoom: screen pixels per millimetre"></span>
+      </div>
+    </div>
+  </main>
+  <div class="pop" id="pop" role="dialog" aria-label="Choose a color" hidden></div>
+
   <a class="embed-open" id="embedOpen" target="_blank" rel="noopener" hidden><svg class="i sm" aria-hidden="true"><use href="#i-brand"/></svg>Open in Croquis</a>
 
   <div class="backdrop" id="dlg" hidden>
@@ -5529,6 +5571,7 @@ function showDialog(o) {
   $('dlgBody').replaceChildren(...(o.body || []));
   $('dlgFoot').replaceChildren(...(o.foot || []));
   $('dlgBox').classList.toggle('small', !!o.small);
+  $('dlgBox').classList.toggle('narrow', !!o.narrow);
   $('dlg').hidden = false;
   app.dlgClose = o.onClose || null;
 }
@@ -6206,7 +6249,7 @@ function updateStatus() {
   updateUnitsUI();
   updateSheetInfo();
   const hid = hiddenSummary().count;
-  $('selInfo').textContent = [app.sel.length ? app.sel.length + ' selected' : '', hid ? hid + ' hidden' : ''].filter(Boolean).join(' · ');
+  void hid;
 }
 const setPressed = (id, v) => { const b = $(id); if (b) b.setAttribute('aria-pressed', String(!!v)); };
 function setShowRel(v) { app.showRel = v; setPressed('btnRel', v); savePrefs(); renderPM(); renderSide(); requestRender(); }
@@ -8344,6 +8387,9 @@ function renderSide() {
   body.scrollTop = top;
 }
 function wireSide() {
+  document.addEventListener('pointerdown', (e) => {
+    if (app.selLayer && !(e.target.closest && e.target.closest('[data-lid]'))) { app.selLayer = 0; renderSide(); }
+  }, true);
   $('sideBody').addEventListener('focusout', () => { setTimeout(() => { if (sideDirty) renderSide(); }, 0); });
   $('sideBody').addEventListener('mouseleave', () => { if (app.hoverGroup) { app.hoverGroup = 0; requestRender(); } });
 }
@@ -8414,9 +8460,11 @@ function layersSection() {
     return box;
   }
   const list = el('ul', { class: 'sb-list', 'aria-label': 'Note layers' });
+  const selLayers = new Set(selNotes().map((id) => sk.notes.get(id).layer));
   for (const l of sk.layers.values()) {
     const active = l.id === sk.activeLayer;
-    const row = el('li', { class: 'sb-row' + (active ? ' active' : '') + (l.hidden ? ' off' : ''), 'data-lid': String(l.id), title: active ? l.name + ' (new notes go here)' : 'Click to put new notes on ' + l.name });
+    const picked = l.id === app.selLayer || selLayers.has(l.id);
+    const row = el('li', { class: 'sb-row' + (active ? ' active' : '') + (l.hidden ? ' off' : ''), 'data-lid': String(l.id), 'aria-selected': String(picked), title: active ? l.name + ' (new notes go here)' : 'Click to put new notes on ' + l.name });
     const eye = miniBtn(l.hidden ? 'i-hide' : 'i-eye', l.hidden ? 'Show layer' : 'Hide layer', (e) => { e.stopPropagation(); patchLayer(l.id, { hidden: !l.hidden }); }, l.hidden ? '' : 'on');
     const lock = miniBtn(l.locked ? 'i-lock' : 'i-unlock', l.locked ? 'Unlock layer' : 'Lock layer', (e) => { e.stopPropagation(); patchLayer(l.id, { locked: !l.locked }); }, l.locked ? 'on' : '');
     const chip = el('button', { class: 'chip', type: 'button', title: 'Layer color: ' + colorName(l.color), 'aria-label': 'Layer color' });
@@ -8435,7 +8483,7 @@ function layersSection() {
       ]);
     });
     row.append(el('span', { class: 'radio-dot', 'aria-hidden': 'true' }), eye, lock, chip, name, el('span', { class: 'sb-count', text: String(counts.get(l.id) || 0) }), more);
-    row.addEventListener('click', () => { setActiveLayer(l.id); if (isNoteTool(app.tool)) renderPM(); });
+    row.addEventListener('click', () => { app.selLayer = l.id; setActiveLayer(l.id); if (isNoteTool(app.tool)) renderPM(); });
     list.append(row);
   }
   box.append(list);
@@ -8566,6 +8614,7 @@ Object.assign(app.opts, { offsetD: 5, offsetBoth: false, offsetChain: true, offs
 app.readonly = false;
 app.showGrid = true;
 app.showOrigin = false;
+app.selLayer = 0;
 app.showHelp = true;
 app.embed = false;
 
@@ -8696,6 +8745,7 @@ function renderTabs() {
     return tab;
   });
   const plus = el('button', { class: 'dtab-new', type: 'button', title: 'New drawing in a new tab', 'aria-label': 'New drawing' }, svgUse('i-plus', 'i sm'));
+  plus.append(el('span', { class: 'lbl-new', text: 'New drawing' }));
   plus.addEventListener('click', newDoc);
   bar.replaceChildren(...items.filter(Boolean), plus);
   const act = bar.querySelector('.dtab[aria-selected="true"]');
@@ -9030,14 +9080,6 @@ function openAbout() {
   const body = [
     el('div', { class: 'about-head' }, brand, el('div', {}, el('h3', { class: 'wordmark' }, 'CROQUIS', el('span', { class: 'dot', text: '.' })), el('p', { text: 'Quick constrained 2D sketches and schematics · version ' + APP_VERSION }))),
     el('p', { text: 'Croquis (French for “sketch”) is for making 2D schematics fast: sketch with relations and dimensions, then drag the sketch by hand to see how the system moves. Add forces and supports, put it on a sheet if you need one, and export a PDF, SVG, DXF or TikZ figure. It is not a CAD system, just a quick way to explain a mechanism. It runs entirely in your browser; your drawings stay on your device.' }),
-    el('div', { class: 'dlg-sec' }, el('h3', { text: 'Made by' }),
-      el('p', { style: 'margin-bottom:6px' }, el('b', { text: AUTHOR.name })),
-      el('p', { class: 'hint', text: 'Made with the “technical” skill of an LLM, to match the field needs of an engineer.' }),
-      el('ul', { class: 'link-list' },
-        el('li', {}, extLink(AUTHOR.linkedin, 'LinkedIn')),
-        el('li', {}, extLink(AUTHOR.github, 'GitHub · StepaneBinon')),
-        el('li', {}, extLink(AUTHOR.org, 'Bare Metal Foundry')),
-        el('li', {}, extLink(REPO, 'Source code')))),
     el('div', { class: 'dlg-sec' }, el('h3', { text: 'Ideas and problems' }),
       el('p', { text: 'Missing a tool, or something could look or work better? Open a ticket on GitHub: it takes a minute and every request is read.' }),
       el('ul', { class: 'link-list' },
@@ -9048,8 +9090,15 @@ function openAbout() {
       el('p', {}, 'Free for personal and other noncommercial use under the ', el('a', { class: 'inline', href: 'https://polyformproject.org/licenses/noncommercial/1.0.0', target: '_blank', rel: 'noopener', text: 'PolyForm Noncommercial License 1.0.0' }), '. Using Croquis for profit, inside a company or as part of a paid product or service needs the author’s approval: ',
         el('a', { class: 'inline', href: AUTHOR.linkedin, target: '_blank', rel: 'noopener', text: 'send a message on LinkedIn' }), '.'),
       el('p', { class: 'hint', text: '© 2026 ' + AUTHOR.name + '. Fonts: Unbounded, Barlow Semi Condensed and B612 Mono (SIL Open Font License).' })),
+    el('div', { class: 'dlg-sec' }, el('h3', { text: 'Made by' }),
+      el('p', { style: 'margin-bottom:6px' }, el('b', { text: AUTHOR.name })),
+      el('p', { class: 'hint', text: 'Made with the “technical” skills of an LLM, to match the field needs of an engineer.' }),
+      el('ul', { class: 'link-list' },
+        el('li', {}, extLink(AUTHOR.linkedin, 'LinkedIn')),
+        el('li', {}, extLink(AUTHOR.github, 'GitHub')),
+        el('li', {}, extLink(REPO, 'Source code')))),
   ];
-  showDialog({ title: 'About Croquis', body, foot: [el('button', { class: 'btn', type: 'button', text: 'Keyboard shortcuts', onclick: openShortcuts }), el('button', { class: 'btn primary', type: 'button', text: 'Close', onclick: hideDialog })] });
+  showDialog({ title: 'About Croquis', narrow: true, body, foot: [el('button', { class: 'btn', type: 'button', text: 'Keyboard shortcuts', onclick: openShortcuts }), el('button', { class: 'btn primary', type: 'button', text: 'Close', onclick: hideDialog })] });
 }
 function openShortcuts() {
   hideMenus();
@@ -9115,17 +9164,18 @@ function syncFullscreen() {
 
 /* ---------- light / dark theme ---------- */
 const LS_THEME = 'croquis:theme';
-const THEMES = { auto: ['i-theme-auto', 'follows your system'], light: ['i-sun', 'light'], dark: ['i-moon', 'dark'] };
+const THEMES = { light: ['i-sun', 'Light'], dark: ['i-moon', 'Dark'] };
+/* Light or dark. Until the first click it matches the system setting. */
+const systemTheme = () => (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 function applyTheme(t, save) {
-  if (!THEMES[t]) t = 'auto';
-  if (t === 'auto') document.documentElement.removeAttribute('data-theme');
-  else document.documentElement.setAttribute('data-theme', t);
+  if (!THEMES[t]) t = systemTheme();
+  document.documentElement.setAttribute('data-theme', t);
   const b = $('btnTheme');
   if (b) {
-    const next = { auto: 'light', light: 'dark', dark: 'auto' }[t];
+    const next = t === 'light' ? 'dark' : 'light';
     b.firstElementChild.firstElementChild.setAttribute('href', '#' + THEMES[t][0]);
-    b.title = 'Theme: ' + THEMES[t][1] + '. Click for ' + THEMES[next][1] + '.';
-    b.setAttribute('aria-label', 'Theme: ' + THEMES[t][1]);
+    b.title = THEMES[t][1] + ' theme. Click for the ' + THEMES[next][1].toLowerCase() + ' theme.';
+    b.setAttribute('aria-label', THEMES[t][1] + ' theme');
     b.dataset.theme = t;
   }
   if (save) lsSet(LS_THEME, t);
@@ -9141,8 +9191,10 @@ function wireExtras() {
   $('btnFull').addEventListener('click', toggleFullscreen);
   document.addEventListener('fullscreenchange', syncFullscreen);
   document.addEventListener('webkitfullscreenchange', syncFullscreen);
-  applyTheme(lsGet(LS_THEME) || 'auto');
-  $('btnTheme').addEventListener('click', () => { const t = $('btnTheme').dataset.theme || 'auto'; applyTheme({ auto: 'light', light: 'dark', dark: 'auto' }[t], true); });
+  applyTheme(lsGet(LS_THEME));
+  // the name field is sized to its text: measure again once the web fonts have loaded
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitDocName);
+  $('btnTheme').addEventListener('click', () => applyTheme($('btnTheme').dataset.theme === 'dark' ? 'light' : 'dark', true));
 
   $('btnUnits').addEventListener('click', () => setUnits(unitK() === 1 ? 'in' : 'mm'));
   $('btnBrand').addEventListener('click', openAbout);

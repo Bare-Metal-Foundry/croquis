@@ -49,7 +49,7 @@ Croquis is **not a CAD system**. Its sketcher borrows the relations and dimensio
 | **TikZ** | A `tikzpicture` (or a standalone `.tex`) for LaTeX: true-to-scale geometry, dimensions and notes, text in your document font. Fit to a width in cm, full size, or the whole sheet. |
 | **JSON** | The native sketch file, with every relation, dimension, equation and picture. Import it back, or import a **DXF**. |
 
-**A clean workspace** — one click hides the grid, another goes full screen, and the tutorial texts (tips, how-to and panel explanations) can be switched off from Display or the **?** menu once you know your way around. Light, dark or automatic theme.
+**A clean workspace** — one click hides the grid, another goes full screen, and the tutorial texts (tips, how-to and panel explanations) can be switched off from Display or the **?** menu once you know your way around. A light / dark switch (it starts from your system setting).
 
 **Several drawings at once** — every drawing opens in its own tab, with its own undo history. Open tabs and their contents come back when you return.
 
@@ -86,7 +86,7 @@ The drawing travels inside the link itself, after the `#`, compressed. There is 
 | `Ctrl+Z` / `Ctrl+Y` | Undo / redo | `Ctrl+S` | Save |
 | `Esc` | Cancel, back to Select | `Ctrl` (hold) | Sketch without automatic relations |
 
-Wheel to zoom; middle or right drag (or Space + drag) to pan. The footer holds the grid, snap and fit buttons, the zoom and the unit switch. Help › Keyboard shortcuts shows this list in the app.
+Wheel to zoom; middle or right drag (or Space + drag) to pan. The unit switch, grid, snap and fit buttons and the zoom sit at the foot of the toolbar; the open drawings are listed at the bottom of the left panel. Help › Keyboard shortcuts shows this list in the app.
 
 ## Using a drawing in LaTeX
 
@@ -154,7 +154,7 @@ Croquis is *source-available*, not open source in the OSI sense, because of this
 
 ## Author
 
-Made by **Stépane Binon**, with the “technical” skill of an LLM, to match the field needs of an engineer.
+Made by **Stépane Binon**, with the “technical” skills of an LLM, to match the field needs of an engineer.
 
 - LinkedIn: [linkedin.com/in/stepane-binon](https://www.linkedin.com/in/stepane-binon/)
 - GitHub: [@StepaneBinon](https://github.com/StepaneBinon) · [Bare Metal Foundry](https://github.com/Bare-Metal-Foundry)
