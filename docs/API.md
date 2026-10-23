@@ -39,6 +39,7 @@ Exit codes: `0` ok · `1` invalid input (the report's `error` names the faulty i
 | --- | --- |
 | `--svg <file>` | Vector figure, about 160 mm across (text and arrows stay readable for any part size). |
 | `--pdf <file>` | Vector PDF. With a `sheet`, the paper at its scale with frame and title block; otherwise the drawing at full size. |
+| `--dxf <file>` | Solid geometry in mm for CAD/CAM (SOLIDWORKS, laser cutters); construction lines are left out. |
 | `--tikz <file>` | `tikzpicture` for LaTeX (needs `\usepackage{tikz}`); `--standalone` for a complete document, `--tikz-width <cm>` (default 12). |
 | `--json <file>` | Croquis file: open it in the web app (File › Import) to drag and edit. |
 | `--link` / `--edit-link` | Print a link that opens the drawing in the web app, view-only or as an editable copy. The drawing is inside the link. |
@@ -123,7 +124,9 @@ Optional `style` on any entity: `color` (`ink grey red orange amber green teal c
 
 ### Dimensions
 
-`{ "type": …, "refs": [ … ], "value": 80 }` — omit `value` to keep the current size. `"driven": true` makes a reference dimension that measures without constraining. `"offset"` places the dimension line (in length units, signed).
+`{ "type": …, "refs": [ … ], "value": 80, "side": "below", "offset": 8 }` — omit `value` to keep the current size. `"driven": true` makes a reference dimension that measures without constraining (it does not remove a degree of freedom).
+
+Placing the text: `"side": "above" | "below" | "left" | "right"` puts it on that side of what it measures, `offset` length units away (default 10 mm). Linear dimensions take the side across their direction (horizontal ones: above/below; vertical ones: left/right); radius and diameter leaders point that way. A side that does not apply is reported as a warning. Without `side`, `offset` is signed: positive is on the left when going from the first reference to the second, so above for a horizontal dimension and left for a vertical one.
 
 | Type | References |
 | --- | --- |
@@ -135,7 +138,7 @@ Optional `style` on any entity: `color` (`ink grey red orange amber green teal c
 
 ### Notes (annotations that follow the geometry)
 
-Anchors: a point (`"rod.end"`), a line midpoint (`"rod.mid"`), a position along a line or arc (`"rod@0.25"`, or `"wheel@90"` in degrees on a circle), or a free position `[x, y]`. Text supports `F_1` and `m^2` sub/superscripts, Greek letters and `⌀`.
+Anchors: a point (`"rod.end"`), a line midpoint (`"rod.mid"`), a position along a line or arc (`"rod@0.25"`, or `"wheel@90"` in degrees on a circle), or a free position `[x, y]`. Text supports `F_1` and `m^2` sub/superscripts, Greek letters and `⌀` (drawn as lines in PDF, written `Ø` in SVG so it shows with any font).
 
 | Type | Fields |
 | --- | --- |
@@ -159,7 +162,7 @@ Anchors: a point (`"rod.end"`), a line midpoint (`"rod.mid"`), a position along 
            "fields": { "company": "ACME", "number": "BMF-0001", "rev": "A", "drawn": "J. Doe", "material": "S235" } }
 ```
 
-Sizes `A4 A3 A2 A1 A0 Letter Tabloid`; `scale` like `"1:2"` or `"auto"` (largest standard scale that fits). PDF, SVG and TikZ then output the whole sheet with an ISO frame and title block.
+Sizes `A4 A3 A2 A1 A0 Letter Tabloid`; `scale` like `"1:2"` or `"2:1"`, or `"auto"` (largest standard scale that fits). Either way the drawing is centred above the title block for the scale used; if it does not fit at the scale you asked for, the report says so in `warnings`. PDF, SVG and TikZ then output the whole sheet with an ISO frame and title block.
 
 ## As a library
 
@@ -171,6 +174,7 @@ if (!d.report.ok) throw new Error(d.report.problems.join('\n'));
 await fs.writeFile('figure.svg', await d.svg());
 await fs.writeFile('figure.pdf', await d.pdf());       // Uint8Array
 await fs.writeFile('figure.tex', await d.tikz({ width: 10, standalone: false }));
+await fs.writeFile('part.dxf', await d.dxf());
 console.log(await d.link('view'));
 ```
 

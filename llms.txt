@@ -14,7 +14,7 @@
 
 ## Quick start for agents
 
-- Run without installing: `npx github:Bare-Metal-Foundry/croquis build spec.json --svg out.svg --pdf out.pdf --tikz out.tex --require-full` (Node.js 18+).
+- Run without installing: `npx github:Bare-Metal-Foundry/croquis build spec.json --svg out.svg --pdf out.pdf --tikz out.tex --dxf out.dxf --require-full` (Node.js 18+).
 - Get a starting description: `npx github:Bare-Metal-Foundry/croquis example`.
 - Read the JSON report on stdout: `status` must be "fully defined" for an exact figure; `problems` names each conflicting relation or dimension by its index.
 - `--link` returns a URL that opens the figure in the web app, where a person can drag it and edit it.

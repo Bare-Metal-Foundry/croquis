@@ -32,7 +32,7 @@
 <path d="M147.33 232.67L143.23 241.29L138.71 236.77Z" fill="#111418"/>
 <path d="M128.67 251.33L132.77 242.71L137.29 247.23Z" fill="#111418"/>
 <path d="M137.36 230.62L165.08 202.9L177.1 214.92L149.38 242.64Z" fill="#ffffff"/>
-<text transform="rotate(-45 157.94 223.47)" x="157.94" y="228.02" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">⌀6.6</text>
+<text transform="rotate(-45 157.94 223.47)" x="157.94" y="228.02" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">Ø6.6</text>
 <path d="M138 246L138 292" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 286L138 286" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 286L99 282.8L99 289.2Z" fill="#111418"/>
@@ -79,5 +79,5 @@
 <path d="M138 72L138 82.71" fill="none" stroke="#c2378f" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M138 90L134.6 81.9L141.4 81.9Z" fill="#c2378f"/>
 <rect x="94" y="46" width="222" height="26" fill="#ffffff"/>
-<text x="98" y="63.2" font-family="&quot;Barlow Semi Condensed&quot;, &quot;Arial Narrow&quot;, &quot;Roboto Condensed&quot;, system-ui, sans-serif" font-size="14" font-weight="500" text-anchor="start" fill="#c2378f">4 mm aluminium, 2 × ⌀6.6 through</text>
+<text x="98" y="63.2" font-family="&quot;Barlow Semi Condensed&quot;, &quot;Arial Narrow&quot;, &quot;Roboto Condensed&quot;, system-ui, sans-serif" font-size="14" font-weight="500" text-anchor="start" fill="#c2378f">4 mm aluminium, 2 × Ø6.6 through</text>
 </svg>

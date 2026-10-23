@@ -6653,6 +6653,7 @@ class SvgCtx {
     return { width: String(t).length * this.fontSize() * (/mono/i.test(this.fontFamily()) ? 0.6 : 0.5) };
   }
   fillText(t, x, y) {
+    t = String(t).replace(/⌀/g, 'Ø'); // the diameter sign is missing from many fonts; Ø is everywhere
     const s = this.st, fs = this.fontSize();
     const anchor = s.textAlign === 'center' ? 'middle' : s.textAlign === 'right' || s.textAlign === 'end' ? 'end' : 'start';
     const dy = s.textBaseline === 'middle' ? fs * 0.35 : s.textBaseline === 'top' ? fs * 0.8 : 0;
@@ -9473,8 +9474,9 @@ function drawProjection(ctx, S, m, cu, cv, kind, ink, lw) {
   ctx.restore();
 }
 /* Picks the largest standard scale at which the drawing fits above the
-   title block, and centers it there. */
-function fitSheet(sh) {
+   title block (or uses `forced`, e.g. { n: 2, d: 1 }), and centers the
+   drawing there for that scale. Returns whether the drawing fits. */
+function fitSheet(sh, forced) {
   const sk = app.sk;
   let bb = sk.bbox(true);
   const nb = notesWorldBox(app.V.s);
@@ -9483,17 +9485,17 @@ function fitSheet(sh) {
   const g0 = sheetGeom(Object.assign({}, sh, { scale: { n: 1, d: 1 } }));
   const fr = g0.frame, tb = g0.tb;
   const aw = fr.x1 - fr.x0 - 24, ah = fr.y1 - tb.y1 - 20;
-  let pick = [1, 1];
-  if (bb) {
-    const need = Math.max((bb.x1 - bb.x0) / Math.max(aw, 1), (bb.y1 - bb.y0) / Math.max(ah, 1));
-    pick = SCALES.find(([n, d]) => d / n >= need) || SCALES[SCALES.length - 1];
-  }
+  let pick = [1, 1], need = 0;
+  if (bb) need = Math.max((bb.x1 - bb.x0) / Math.max(aw, 1), (bb.y1 - bb.y0) / Math.max(ah, 1));
+  if (forced && forced.n > 0 && forced.d > 0) pick = [forced.n, forced.d];
+  else if (bb) pick = SCALES.find(([n, d]) => d / n >= need) || SCALES[SCALES.length - 1];
   sh.scale = { n: pick[0], d: pick[1] };
   const k = pick[1] / pick[0], P = g0.P;
   const uc = (fr.x0 + fr.x1) / 2, vc = (tb.y1 + fr.y1) / 2;
   const bx = bb ? (bb.x0 + bb.x1) / 2 : 0, by = bb ? (bb.y0 + bb.y1) / 2 : 0;
   sh.cx = bx - (uc - P.w / 2) * k;
   sh.cy = by - (vc - P.h / 2) * k;
+  return need <= k + 1e-9;
 }
 function patchSheet(fn, refit) {
   const sk = app.sk;
@@ -10203,6 +10205,11 @@ function pdfRuns(text, size, bold) {
   let cur = null;
   for (const ch0 of String(text)) {
     let ch = ch0, font = bold ? 'F2' : 'F1', k = 1, rise = 0, code;
+    if (ch === '⌀') { // drawn as lines, so it shows in every PDF viewer
+      cur = { font: 'DIA', k: 1, rise: 0, codes: [], w: size * 0.72 };
+      runs.push(cur); cur = null;
+      continue;
+    }
     if (SUB_R[ch]) { ch = SUB_R[ch]; k = 0.7; rise = -0.18; }
     else if (SUP_R[ch]) { ch = SUP_R[ch]; k = 0.7; rise = 0.36; }
     code = winCode(ch);
@@ -10301,13 +10308,24 @@ class PdfCtx {
     let lx = s.textAlign === 'center' ? -w / 2 : s.textAlign === 'right' || s.textAlign === 'end' ? -w : 0;
     const base = s.textBaseline === 'middle' ? fs * 0.35 : s.textBaseline === 'top' ? fs * 0.8 : 0;
     const m = a ? pn(c) + ' ' + pn(-sn) + ' ' + pn(sn) + ' ' + pn(c) : '1 0 0 1';
-    const out = ['BT ' + pdfColor(s.fillStyle) + ' rg'];
+    const out = ['BT ' + pdfColor(s.fillStyle) + ' rg'], marks = [];
+    const at = (u, v) => this.P(x + u * c - v * sn, y + u * sn + v * c);
     for (const r of runs) {
+      if (r.font === 'DIA') {
+        // a circle and a slash, centred on half the capital height
+        const cu = lx + r.w / 2, cv = base - fs * 0.36, rr = fs * 0.27, kk = 0.5523 * rr, d = fs * 0.36;
+        marks.push(at(cu + rr, cv) + ' m ' + at(cu + rr, cv - kk) + ' ' + at(cu + kk, cv - rr) + ' ' + at(cu, cv - rr) + ' c ' +
+          at(cu - kk, cv - rr) + ' ' + at(cu - rr, cv - kk) + ' ' + at(cu - rr, cv) + ' c ' + at(cu - rr, cv + kk) + ' ' + at(cu - kk, cv + rr) + ' ' + at(cu, cv + rr) + ' c ' +
+          at(cu + kk, cv + rr) + ' ' + at(cu + rr, cv + kk) + ' ' + at(cu + rr, cv) + ' c ' + at(cu - d, cv + d) + ' m ' + at(cu + d, cv - d) + ' l');
+        lx += r.w;
+        continue;
+      }
       const ly = base - r.rise * fs, px = x + lx * c - ly * sn, py = y + lx * sn + ly * c;
       out.push('/' + r.font + ' ' + pn(fs * r.k * 0.75) + ' Tf ' + m + ' ' + pn(this.X(px)) + ' ' + pn(this.Y(py)) + ' Tm ' + pdfStr(r.codes) + ' Tj');
       lx += r.w;
     }
     out.push('ET');
+    if (marks.length) out.push(pn(fs * 0.075 * 0.75) + ' w 0 J [] 0 d ' + pdfColor(s.fillStyle) + ' RG ' + marks.join(' ') + ' S');
     this.ops.push(out.join('\n'));
   }
   picture(a, c, alpha) {
@@ -10599,7 +10617,29 @@ function headlessApi() {
     },
     pdf: () => buildPDFBytes(),
     tikz: (o) => buildTikz(Object.assign({ size: sheetShown() ? 'sheet' : 'fit', width: 12, dims: app.showDims, notes: true, standalone: false }, o || {})),
-    fitSheet: (sh) => fitSheet(sh),
+    fitSheet: (sh, forced) => fitSheet(sh, forced),
+    dxf: () => buildDXF(),
+    /* Puts a dimension's text on one side of what it measures: "above",
+       "below", "left" or "right", dist (mm) away. False when that side
+       does not apply (e.g. "above" for a vertical dimension). */
+    placeDim(cid, side, dist) {
+      const c = app.sk.cons.get(cid);
+      const dir = { above: [0, 1], below: [0, -1], left: [-1, 0], right: [1, 0] }[side];
+      if (!c || !dir) return false;
+      if (isLinearDim(c)) {
+        const g = linearFrame(c);
+        if (!g) return false;
+        const dot = g.n.x * dir[0] + g.n.y * dir[1];
+        if (Math.abs(dot) < 1e-6) return false;
+        c.label = { o: (dot < 0 ? -1 : 1) * Math.abs(dist), t: 0 };
+        return true;
+      }
+      if (c.type === 'radius' || c.type === 'diameter' || c.type === 'offset') {
+        c.label = { ang: Math.atan2(dir[1], dir[0]), k: Math.abs(dist) };
+        return true;
+      }
+      return false;
+    },
     async link(mode) {
       const sj = app.sk.toJSON();
       delete sj.pictures;

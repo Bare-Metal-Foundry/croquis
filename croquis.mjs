@@ -203,7 +203,7 @@ export async function build(spec) {
   });
 
   // dimensions
-  const dims = [];
+  const dims = [], sides = [];
   (spec.dimensions || []).forEach((o, i) => {
     const where = 'dimensions[' + i + ']';
     let type = DIM_ALIASES[String(o && o.type).toLowerCase()];
@@ -218,12 +218,13 @@ export async function build(spec) {
     }
     const value = o.value === undefined || o.value === null ? undefined : type === 'angle' ? +o.value : L(o.value, where + '.value');
     const opts = { value, driven: !!o.driven, name: typeof o.name === 'string' ? o.name : undefined };
-    if (o.offset !== undefined && type !== 'angle' && type !== 'radius' && type !== 'diameter') opts.label = { o: L(o.offset, where + '.offset'), t: 0 };
+    if (o.offset !== undefined && !o.side && type !== 'angle' && type !== 'radius' && type !== 'diameter') opts.label = { o: L(o.offset, where + '.offset'), t: 0 };
+    if (o.side !== undefined && !['above', 'below', 'left', 'right'].includes(o.side)) throw new SpecError(where + ': "side" must be above, below, left or right.');
     const r = K.addDimension(sk, type, refs, opts);
     const tag = where + ' ' + o.type + ' ' + (o.refs || []).join(', ') + (value !== undefined ? ' = ' + o.value : '');
     if (r.status === 'redundant') { report.problems.push(tag + ': the geometry is already fixed by other constraints, so this dimension would over-define it. Remove it or set "driven": true.'); report.ok = false; }
     else if (r.status !== 'ok') { report.problems.push(tag + ': the sketch cannot reach this value with its other relations and dimensions.'); report.ok = false; }
-    else { labelOf.set(r.id, tag); dims.push({ cid: r.id, spec: o, where }); }
+    else { labelOf.set(r.id, tag); dims.push({ cid: r.id, spec: o, where }); if (o.side) sides.push({ cid: r.id, side: o.side, dist: o.offset !== undefined ? Math.abs(L(o.offset, where + '.offset')) : 10 * k, where }); }
   });
 
   // notes (annotations that follow the geometry)
@@ -265,6 +266,12 @@ export async function build(spec) {
 
   K.solve(sk);
 
+  // dimension text on the requested side of what it measures
+  if (sides.length) {
+    H.use(sk, { name });
+    for (const d of sides) if (!H.placeDim(d.cid, d.side, d.dist)) report.warnings.push(d.where + ': "side": "' + d.side + '" does not apply to this dimension (e.g. "above" on a vertical one); the default place was kept.');
+  }
+
   // optional drawing sheet
   if (spec.sheet) {
     const s = spec.sheet, sh = K.defaultSheet();
@@ -277,8 +284,10 @@ export async function build(spec) {
     sk.sheet = sh;
     H.use(sk, { name });
     const m = /^\s*([\d.]+)\s*:\s*([\d.]+)\s*$/.exec(String(s.scale || 'auto'));
-    H.fitSheet(sh);
-    if (m) { sh.scale = { n: +m[1], d: +m[2] }; }
+    if (s.scale && s.scale !== 'auto' && !m) throw new SpecError('sheet.scale must be "auto" or a ratio such as "1:2" or "2:1".');
+    // centred for the scale actually used, so an explicit scale does not push the part off the frame
+    const fits = H.fitSheet(sh, m ? { n: +m[1], d: +m[2] } : null);
+    if (!fits) report.warnings.push('sheet: at ' + sh.scale.n + ':' + sh.scale.d + ' the drawing is larger than the space above the title block; use a smaller scale, a bigger sheet or "scale": "auto".');
   }
 
   // verdict
@@ -319,6 +328,7 @@ export async function build(spec) {
     svg: async (o) => { use(o); return H.svg(o); },
     pdf: async (o) => { use(o); return H.pdf(); },
     tikz: async (o) => { use(o); return H.tikz(o); },
+    dxf: async () => { use(); return H.dxf().text; },
     link: async (mode = 'view') => { use(); return H.link(mode); },
   };
 }
@@ -340,6 +350,7 @@ export async function open(json) {
     svg: async (o) => { use(o); return H.svg(o); },
     pdf: async (o) => { use(o); return H.pdf(); },
     tikz: async (o) => { use(o); return H.tikz(o); },
+    dxf: async () => { use(); return H.dxf().text; },
     link: async (mode = 'view') => { use(); return H.link(mode); },
   };
 }
@@ -388,7 +399,8 @@ Usage
   node croquis.mjs help
 
 Outputs (any number)
-  --svg <file>   --pdf <file>   --tikz <file>   --json <file>
+  --svg <file>   --pdf <file>   --tikz <file>   --dxf <file>   --json <file>
+                 (DXF: solid geometry in mm for CAD/CAM; construction lines left out)
   --link         print a view-only link that opens the drawing in the web app
   --edit-link    print a link that opens an editable copy
 
@@ -427,7 +439,10 @@ Description (JSON; lengths in "units", angles in degrees)
       coincident: two points · on: point + line/circle/arc · midpoint: point + line ·
       symmetric: a, b, axis line · intersection: point, line, line · fix: one entity
   "dimensions": [ {"type":"length|distance|horizontal|vertical|radius|diameter|angle",
-                   "refs":[...], "value":80, "driven":false, "offset":10} ],
+                   "refs":[...], "value":80, "driven":false, "side":"above", "offset":10} ],
+      side: above|below|left|right puts the text on that side, "offset" mm away (default 10).
+      Without side, "offset" is signed: positive is on the left when going from the first
+      reference to the second (horizontal dimensions: above; vertical: left).
       length: one line · distance: two points, point + line, or two parallel lines ·
       horizontal / vertical: two points or one line · angle: two lines
   "notes": [ {"type":"text","at":ref|[x,y],"text":"Bracket","offset":[dx,dy]},
@@ -459,7 +474,7 @@ async function main(argv) {
   let input = null;
   for (let i = 0; i < rest.length; i++) {
     const a = rest[i];
-    if (['--svg', '--pdf', '--tikz', '--json'].includes(a)) opts.out[a.slice(2)] = rest[++i];
+    if (['--svg', '--pdf', '--tikz', '--json', '--dxf'].includes(a)) opts.out[a.slice(2)] = rest[++i];
     else if (a === '--link') opts.link = 'view';
     else if (a === '--edit-link') opts.link = 'edit';
     else if (a === '--require-full') opts.requireFull = true;
@@ -486,6 +501,7 @@ async function main(argv) {
   if (opts.out.svg) { writeFileSync(opts.out.svg, await d.svg(fig) || ''); files.push(opts.out.svg); }
   if (opts.out.pdf) { const b = await d.pdf(fig); if (b) { writeFileSync(opts.out.pdf, b); files.push(opts.out.pdf); } }
   if (opts.out.tikz) { writeFileSync(opts.out.tikz, await d.tikz(Object.assign({}, fig, { width: opts.tikzWidth || 12, standalone: !!opts.standalone })) || ''); files.push(opts.out.tikz); }
+  if (opts.out.dxf) { writeFileSync(opts.out.dxf, await d.dxf()); files.push(opts.out.dxf); }
   if (opts.out.json) { writeFileSync(opts.out.json, d.json()); files.push(opts.out.json); }
   const report = Object.assign({}, d.report, { files });
   if (opts.link) report.link = await d.link(opts.link);

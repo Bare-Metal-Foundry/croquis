@@ -137,7 +137,7 @@ Options you can add to the link: `&dims=0` hides dimensions, `&notes=0` hides no
 
 - describe entities (lines, arcs, circles, rectangles, slots, polygons), relations, dimensions, annotations, optional measures and a drawing sheet in JSON;
 - Croquis solves the sketch and reports `fully defined` / degrees of freedom left / each conflicting item by its index;
-- outputs SVG, PDF, TikZ, a Croquis `.json` to edit in the app, and a share link.
+- outputs SVG, PDF, TikZ, DXF, a Croquis `.json` to edit in the app, and a share link.
 
 | Example | Description | Figure |
 | --- | --- | --- |
