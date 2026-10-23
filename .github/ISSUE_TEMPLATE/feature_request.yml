@@ -1,0 +1,53 @@
+name: Feature request
+description: Ask for a new tool, export format or workflow in Croquis.
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time! Describe what you are trying to do; the best requests explain the drawing or problem behind them.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The task or drawing you are working on, and where Croquis gets in the way today.
+      placeholder: "I draw sheet-metal brackets and need to…"
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like Croquis to do?
+      description: How the feature could work. Mention a similar tool (SolidWorks, Onshape, FreeCAD…) if it does it well.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Sketching tools
+        - Relations and dimensions
+        - Notes and annotations
+        - Drawing sheet / title block
+        - Export (PDF, SVG, PNG, DXF, TikZ)
+        - Import / pictures
+        - Sharing and embedding
+        - Tabs, saving, files
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: importance
+    attributes:
+      label: How much would it help you?
+      options:
+        - Nice to have
+        - It would save me real time
+        - I can't use Croquis without it
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Sketches, screenshots or example files help a lot. Drag them in here.

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Commercial use license
+    url: https://www.linkedin.com/in/stepane-binon/
+    about: Want to use Croquis for profit or inside a company? Send Stépane Binon a message on LinkedIn.
+  - name: Open Croquis
+    url: https://bare-metal-foundry.github.io/croquis/
+    about: The app itself, in your browser.

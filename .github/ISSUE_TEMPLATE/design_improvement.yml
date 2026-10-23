@@ -1,0 +1,44 @@
+name: Design improvement
+description: Suggest how something could look, read or behave better.
+title: "[Design] "
+labels: ["design"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas about the interface, the look of exported drawings, wording, or anything that feels awkward are all welcome.
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      options:
+        - Toolbar / ribbon
+        - Properties panel
+        - Browser panel
+        - Canvas (how geometry, dimensions or notes look)
+        - Drawing sheet and title block
+        - Exported files (PDF, SVG, PNG, DXF, TikZ)
+        - Dialogs and messages
+        - Phone or tablet layout
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: now
+    attributes:
+      label: What feels wrong today?
+      description: What you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: better
+    attributes:
+      label: How could it be better?
+      description: A sketch or a screenshot with annotations is worth a thousand words.
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Browser and device
+      placeholder: "Firefox 140 on Windows 11, 1920×1080"
