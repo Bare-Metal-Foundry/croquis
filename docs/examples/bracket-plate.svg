@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="150.31mm" height="81.5mm" viewBox="-125.65 28 601.25 326">
+<svg xmlns="http://www.w3.org/2000/svg" width="150.56mm" height="81.5mm" viewBox="-125.65 28 602.25 326">
 <title>Bracket plate</title>
-<rect x="-125.65" y="28" width="601.25" height="326" fill="#ffffff"/>
+<rect x="-125.65" y="28" width="602.25" height="326" fill="#ffffff"/>
 <path d="M90 290L410 290L410 90L90 90L90 290ZM151.2 242L151.2 242A13.2 13.2 0 1 1 124.8 242A13.2 13.2 0 1 1 151.2 242ZM375.2 242L375.2 242A13.2 13.2 0 1 1 348.8 242A13.2 13.2 0 1 1 375.2 242Z" fill="#2b5fd9" fill-opacity="0.15" fill-rule="evenodd"/>
 <path d="M202 158L298 158" fill="none" stroke="#8a9099" stroke-width="1.4" stroke-dasharray="9 3 2 3" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 290L410 290" fill="none" stroke="#111418" stroke-width="1.4" stroke-linecap="butt" stroke-linejoin="round"/>
@@ -19,63 +19,63 @@
 <path d="M90 330L410 330" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 330L99 326.8L99 333.2Z" fill="#111418"/>
 <path d="M410 330L401 333.2L401 326.8Z" fill="#111418"/>
-<rect x="238.2" y="321.5" width="23.6" height="17" fill="#ffffff"/>
+<path d="M238.2 321.5L261.8 321.5L261.8 338.5L238.2 338.5Z" fill="#ffffff"/>
 <text x="250" y="335.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">80</text>
 <path d="M414 290L456 290" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M414 90L456 90" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M450 290L450 90" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M450 290L446.8 281L453.2 281Z" fill="#111418"/>
 <path d="M450 90L453.2 99L446.8 99Z" fill="#111418"/>
-<rect x="438.2" y="181.5" width="23.6" height="17" fill="#ffffff"/>
-<text x="450" y="195.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">50</text>
+<path d="M441.5 201.8L441.5 178.2L458.5 178.2L458.5 201.8Z" fill="#ffffff"/>
+<text transform="rotate(-90 451 190)" x="451" y="194.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">50</text>
 <path d="M128.67 251.33L157.23 222.77" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M147.33 232.67L143.23 241.29L138.71 236.77Z" fill="#111418"/>
 <path d="M128.67 251.33L132.77 242.71L137.29 247.23Z" fill="#111418"/>
-<rect x="137.63" y="214.27" width="39.2" height="17" fill="#ffffff"/>
-<text x="157.23" y="228.32" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">⌀6.6</text>
+<path d="M137.36 230.62L165.08 202.9L177.1 214.92L149.38 242.64Z" fill="#ffffff"/>
+<text transform="rotate(-45 157.94 223.47)" x="157.94" y="228.02" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">⌀6.6</text>
 <path d="M138 246L138 292" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 286L138 286" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 286L99 282.8L99 289.2Z" fill="#111418"/>
 <path d="M138 286L129 289.2L129 282.8Z" fill="#111418"/>
-<rect x="102.2" y="277.5" width="23.6" height="17" fill="#ffffff"/>
+<path d="M102.2 277.5L125.8 277.5L125.8 294.5L102.2 294.5Z" fill="#ffffff"/>
 <text x="114" y="291.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">12</text>
 <path d="M134 242L88 242" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M94 290L94 242" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M94 290L90.8 281L97.2 281Z" fill="#111418"/>
 <path d="M94 242L97.2 251L90.8 251Z" fill="#111418"/>
-<rect x="82.2" y="257.5" width="23.6" height="17" fill="#ffffff"/>
-<text x="94" y="271.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">12</text>
+<path d="M85.5 277.8L85.5 254.2L102.5 254.2L102.5 277.8Z" fill="#ffffff"/>
+<text transform="rotate(-90 95 266)" x="95" y="270.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">12</text>
 <path d="M362 246L362 292" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M362 286L410 286" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M362 286L371 282.8L371 289.2Z" fill="#111418"/>
 <path d="M410 286L401 289.2L401 282.8Z" fill="#111418"/>
-<rect x="374.2" y="277.5" width="23.6" height="17" fill="#ffffff"/>
+<path d="M374.2 277.5L397.8 277.5L397.8 294.5L374.2 294.5Z" fill="#ffffff"/>
 <text x="386" y="291.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">12</text>
 <path d="M90 286L90 98" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M202 154L202 98" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 104L202 104" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 104L99 100.8L99 107.2Z" fill="#111418"/>
 <path d="M202 104L193 107.2L193 100.8Z" fill="#111418"/>
-<rect x="134.2" y="95.5" width="23.6" height="17" fill="#ffffff"/>
+<path d="M134.2 95.5L157.8 95.5L157.8 112.5L134.2 112.5Z" fill="#ffffff"/>
 <text x="146" y="109.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">28</text>
 <path d="M202 154L202 120" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M298 154L298 120" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M202 126L298 126" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M202 126L211 122.8L211 129.2Z" fill="#111418"/>
 <path d="M298 126L289 129.2L289 122.8Z" fill="#111418"/>
-<rect x="238.2" y="117.5" width="23.6" height="17" fill="#ffffff"/>
+<path d="M238.2 117.5L261.8 117.5L261.8 134.5L238.2 134.5Z" fill="#ffffff"/>
 <text x="250" y="131.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">24</text>
 <path d="M94 290L332 290" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M206 158L332 158" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M326 290L326 158" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M326 290L322.8 281L329.2 281Z" fill="#111418"/>
 <path d="M326 158L329.2 167L322.8 167Z" fill="#111418"/>
-<rect x="314.2" y="215.5" width="23.6" height="17" fill="#ffffff"/>
-<text x="326" y="229.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">33</text>
+<path d="M317.5 235.8L317.5 212.2L334.5 212.2L334.5 235.8Z" fill="#ffffff"/>
+<text transform="rotate(-90 327 224)" x="327" y="228.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">33</text>
 <path d="M298 158L319.21 136.79" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M309.31 146.69L305.21 155.31L300.69 150.79Z" fill="#111418"/>
-<rect x="307.41" y="128.29" width="23.6" height="17" fill="#ffffff"/>
-<text x="319.21" y="142.34" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">R4</text>
+<path d="M304.86 139.12L321.55 122.43L333.57 134.45L316.88 151.14Z" fill="#ffffff"/>
+<text transform="rotate(-45 319.92 137.49)" x="319.92" y="142.04" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">R4</text>
 <path d="M138 72L138 82.71" fill="none" stroke="#c2378f" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M138 90L134.6 81.9L141.4 81.9Z" fill="#c2378f"/>
 <rect x="94" y="46" width="222" height="26" fill="#ffffff"/>

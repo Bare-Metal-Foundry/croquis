@@ -373,6 +373,12 @@ body.no-help .help, body.no-help .sb-empty, body.no-help .note-line { display: n
 .ctx button { display: flex; width: 100%; align-items: center; gap: 8px; padding: 6px 9px; border: 0; border-radius: 5px; background: transparent; text-align: left; font-size: 13.5px; }
 .ctx button:hover, .ctx button:focus-visible { background: var(--hover-bg); }
 .ctx hr { border: 0; border-top: 1px solid var(--rule); margin: 4px 2px; }
+.ctx { min-width: 0; }
+.ctx-quick { display: grid; grid-template-columns: repeat(2, 32px); gap: 2px; }
+.ctx button.qt { justify-content: center; width: 32px; height: 32px; padding: 0; }
+.ctx button.qt[aria-pressed="true"] { background: var(--active-bg); color: var(--select-ink); }
+.ctx button.qt svg { width: 18px; height: 18px; }
+.ctx .ctx-quick + hr { margin: 4px 0; }
 
 .toast {
   position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 30; max-width: min(520px, calc(100% - 32px));
@@ -3577,15 +3583,32 @@ function fmtDim(c) {
 /* Linked dimensions show a chain, equation-driven ones a sigma. */
 function dimMark(c) { return c && c.expr ? (K.singleName(c.expr) ? 'link' : 'sigma') : null; }
 let dimMarkNow = null;
-function drawDimMark(ctx, x, y, mark, col) {
+/* Text turned by angle a (radians, screen direction) around (x, y). The
+   export contexts write rotated text themselves; the canvas rotates. */
+function fillTextAt(ctx, t, x, y, a) {
+  if (!a) { ctx.fillText(t, x, y); return; }
+  if (ctx.fillTextRot) { ctx.fillTextRot(t, x, y, a); return; }
+  ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillText(t, 0, 0); ctx.restore();
+}
+/* The angle that keeps text along a direction but never upside down:
+   vertical text reads from bottom to top, as on drawings. */
+function uprightAngle(a) {
+  a = Math.atan2(Math.sin(a), Math.cos(a));
+  if (a >= Math.PI / 2 - 1e-6) a -= Math.PI;
+  else if (a < -Math.PI / 2 - 1e-6) a += Math.PI;
+  return Math.abs(a) < 1e-6 ? 0 : a;
+}
+function drawDimMark(ctx, x, y, mark, col, a = 0) {
+  const c = Math.cos(a), s = Math.sin(a);
+  const at = (lx, ly) => [x + lx * c - ly * s, y + lx * s + ly * c];
   ctx.save();
   ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1.3; ctx.setLineDash([]);
   if (mark === 'link') {
-    ctx.beginPath(); ctx.arc(x - 2.3, y + 0.5, 2.7, 0, TAU); ctx.stroke();
-    ctx.beginPath(); ctx.arc(x + 2.3, y + 0.5, 2.7, 0, TAU); ctx.stroke();
+    for (const dx of [-2.3, 2.3]) { const [px, py] = at(dx, 0.5); ctx.beginPath(); ctx.arc(px, py, 2.7, 0, TAU); ctx.stroke(); }
   } else {
     ctx.font = '700 12px ' + FONT_NUM; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('Σ', x, y + 1);
+    const [px, py] = at(0, 1);
+    fillTextAt(ctx, 'Σ', px, py, a);
   }
   ctx.restore();
 }
@@ -4037,16 +4060,25 @@ function extLine(ctx, x0, y0, x1, y1) {
   const ux = dx / L, uy = dy / L;
   ctx.beginPath(); ctx.moveTo(x0 + ux * 4, y0 + uy * 4); ctx.lineTo(x1 + ux * 6, y1 + uy * 6); ctx.stroke();
 }
-function dimText(R, text, x, y, col) {
-  const ctx = R.ctx, mark = dimMarkNow;
+/* The value of a dimension, centered on (x, y) and written along the
+   dimension line (direction ang, screen radians), as in CAD drawings. A
+   box in the sheet color masks the line behind the text. Returns the
+   axis-aligned box used for picking. */
+function dimText(R, text, x, y, col, ang) {
+  const ctx = R.ctx, mark = dimMarkNow, a = uprightAngle(ang || 0), c = Math.cos(a), s = Math.sin(a);
   ctx.font = '13px ' + FONT_NUM;
-  const tw = ctx.measureText(text).width, h = 17, mw = mark ? 14 : 0, w = tw + mw;
-  const bx = x - w / 2 - 4, by = y - h / 2;
-  ctx.fillStyle = R.pal.sheet; ctx.fillRect(bx, by, w + 8, h);
+  const tw = ctx.measureText(text).width, h = 17, mw = mark ? 14 : 0, w = tw + mw, W = w + 8;
+  const at = (lx, ly) => [x + lx * c - ly * s, y + lx * s + ly * c];
+  const corners = [at(-W / 2, -h / 2), at(W / 2, -h / 2), at(W / 2, h / 2), at(-W / 2, h / 2)];
+  ctx.fillStyle = R.pal.sheet;
+  ctx.beginPath(); corners.forEach(([px, py], i) => (i ? ctx.lineTo(px, py) : ctx.moveTo(px, py))); ctx.closePath(); ctx.fill();
   ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(text, x + mw / 2, y + 1);
-  if (mark) drawDimMark(ctx, bx + 10, y, mark, col);
-  return { x: bx, y: by, w: w + 8, h };
+  const [px, py] = at(mw / 2, 1);
+  fillTextAt(ctx, text, px, py, a);
+  if (mark) { const [mx, my] = at(-W / 2 + 10, 0); drawDimMark(ctx, mx, my, mark, col, a); }
+  const xs = corners.map((q) => q[0]), ys = corners.map((q) => q[1]);
+  const x0 = Math.min(...xs), y0 = Math.min(...ys);
+  return { x: x0, y: y0, w: Math.max(...xs) - x0, h: Math.max(...ys) - y0 };
 }
 function linearFrame(c) {
   const sk = app.sk;
@@ -4163,7 +4195,7 @@ function drawLinearDim(R, c, text, col) {
     const [ex, ey] = R.toS(E.x, E.y), [fx, fy] = R.toS(g.foot.F.x, g.foot.F.y);
     ctx.save(); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(fx, fy); ctx.stroke(); ctx.restore();
   }
-  return dimText(R, text, tx, ty, col);
+  return dimText(R, text, tx, ty, col, Math.atan2(dBy - dAy, dBx - dAx) || Math.atan2(-u.y, u.x));
 }
 function drawRadialDim(R, c, text, col) {
   const sk = app.sk, ctx = R.ctx, e = sk.get(c.refs[0]);
@@ -4194,7 +4226,7 @@ function drawRadialDim(R, c, text, col) {
       }
     }
   }
-  return dimText(R, text, tx, ty, col);
+  return dimText(R, text, tx, ty, col, Math.atan2(ty - cy, tx - cx));
 }
 function drawAngleDim(R, c, text, col) {
   const sk = app.sk, ctx = R.ctx;
@@ -4236,7 +4268,7 @@ function drawAngleDim(R, c, text, col) {
   ext(c.refs[0], a1);
   ext(c.refs[1], a2);
   const am = a1 + g.sweep * tt;
-  return dimText(R, text, ix + rpx * Math.cos(am), iy - rpx * Math.sin(am), col);
+  return dimText(R, text, ix + rpx * Math.cos(am), iy - rpx * Math.sin(am), col, -am + Math.PI / 2);
 }
 
 /* ---------- relation glyphs ---------- */
@@ -6364,6 +6396,15 @@ function hideMenus() {
   $('exportMenu').hidden = true; $('btnExport').setAttribute('aria-expanded', 'false');
   $('helpMenu').hidden = true; $('btnHelp').setAttribute('aria-expanded', 'false');
 }
+/* Right-click: the four basic tools as icons in a 2 × 2 square. */
+const QUICK_TOOLS = [['point', 'i-point', 'Point', 'P'], ['line', 'i-line', 'Line', 'L'], ['circle', 'i-circle', 'Circle', 'C'], ['rect', 'i-rect', 'Rectangle', 'R']];
+function quickTools() {
+  return el('div', { class: 'ctx-quick', role: 'group', 'aria-label': 'Draw' },
+    ...QUICK_TOOLS.map(([tool, icon, name, key]) => el('button', {
+      type: 'button', role: 'menuitem', class: 'qt', title: name + ' (' + key + ')', 'aria-label': name, 'aria-pressed': String(app.tool === tool),
+      onclick: () => { hideCtx(); setTool(tool); },
+    }, svgUse(icon, 'i'))));
+}
 function showCtx(ev) {
   const items = [];
   const T = TOOLS[app.tool];
@@ -6392,17 +6433,14 @@ function showCtx(ev) {
     if (app.sel.length) items.push(['Delete', deleteSelection]);
     if (hiddenSummary().count) items.push(['Show all hidden (Shift+H)', showAllHidden]);
   }
-  if (items.length && items[items.length - 1] !== '-') items.push('-');
-  items.push(['Zoom to fit', zoomFit]);
-  items.push(['Select all', () => { if (app.tool !== 'select') setTool('select'); selectAll(); }]);
+  while (items.length && items[items.length - 1] === '-') items.pop();
   const menu = $('ctx');
-  menu.replaceChildren(...items.map((it) => it === '-' ? el('hr') : el('button', { type: 'button', role: 'menuitem', text: it[0], onclick: () => { hideCtx(); it[1](); } })));
+  menu.replaceChildren(quickTools(), ...(items.length ? [el('hr')] : []),
+    ...items.map((it) => it === '-' ? el('hr') : el('button', { type: 'button', role: 'menuitem', text: it[0], onclick: () => { hideCtx(); it[1](); } })));
   menu.hidden = false;
   const w = menu.offsetWidth || 200, h = menu.offsetHeight || 200;
   menu.style.left = clamp(ev.sx, 4, Math.max(4, app.W - w - 4)) + 'px';
   menu.style.top = clamp(ev.sy, 4, Math.max(4, app.H - h - 4)) + 'px';
-  const first = menu.querySelector('button');
-  if (first) first.focus();
 }
 
 /* ---- Croquis UI, part 4: storage, export/import, input wiring, startup ---- */
@@ -9752,7 +9790,7 @@ function drawOffsetDim(R, c, text, col) {
   ctx.beginPath(); ctx.moveTo(x1 - ex * 16, y1 - ey * 16); ctx.lineTo(lab.k > 0 ? tx : x2 + ex * 16, lab.k > 0 ? ty : y2 + ey * 16); ctx.stroke();
   arrowHead(ctx, x1, y1, ex, ey);
   arrowHead(ctx, x2, y2, -ex, -ey);
-  return dimText(R, text, tx, ty, col);
+  return dimText(R, text, tx, ty, col, Math.atan2(ey, ex));
 }
 function offsetLabel(c, m) {
   const sk = app.sk, a = sk.get(c.refs[0]), b = sk.get(c.refs[1]);
@@ -10094,6 +10132,11 @@ SvgCtx.prototype.fill = function (rule) {
   const a = this.globalAlpha;
   this.parts.push('<path d="' + this.d + '" fill="' + this.st.fillStyle + '"' + (a < 1 ? ' fill-opacity="' + nf(a) + '"' : '') + (rule === 'evenodd' ? ' fill-rule="evenodd"' : '') + '/>');
 };
+SvgCtx.prototype.fillTextRot = function (t, x, y, a) {
+  const n = this.parts.length;
+  this.fillText(t, x, y);
+  if (this.parts.length > n) this.parts[n] = this.parts[n].replace('<text ', '<text transform="rotate(' + nf(a * 180 / Math.PI) + ' ' + nf(x) + ' ' + nf(y) + ')" ');
+};
 SvgCtx.prototype.picture = function (a, c, alpha) {
   const m = [(c.TR.x - c.TL.x), (c.TR.y - c.TL.y), (c.BL.x - c.TL.x), (c.BL.y - c.TL.y), c.TL.x, c.TL.y].map(nf).join(' ');
   this.parts.push('<image href="' + a.url + '" x="0" y="0" width="1" height="1" preserveAspectRatio="none" opacity="' + nf(alpha) + '" transform="matrix(' + m + ')"/>');
@@ -10250,16 +10293,19 @@ class PdfCtx {
   fontSize() { const m = /(\d+(?:\.\d+)?)px/.exec(this.st.font); return m ? +m[1] : 12; }
   fontBold() { const m = /^\s*(\d{3}|bold)\s/.exec(this.st.font); return !!m && (m[1] === 'bold' || +m[1] >= 600); }
   measureText(t) { let w = 0; for (const r of pdfRuns(t, this.fontSize(), this.fontBold())) w += r.w; return { width: w }; }
-  fillText(t, x, y) {
+  fillText(t, x, y) { this.fillTextRot(t, x, y, 0); }
+  /* Text turned by a (radians, clockwise on screen) around (x, y). */
+  fillTextRot(t, x, y, a) {
     const s = this.st, fs = this.fontSize(), runs = pdfRuns(t, fs, this.fontBold());
-    const w = runs.reduce((a, r) => a + r.w, 0);
-    let x0 = x;
-    if (s.textAlign === 'center') x0 = x - w / 2; else if (s.textAlign === 'right' || s.textAlign === 'end') x0 = x - w;
-    const base = s.textBaseline === 'middle' ? y + fs * 0.35 : s.textBaseline === 'top' ? y + fs * 0.8 : y;
+    const w = runs.reduce((acc, r) => acc + r.w, 0), c = Math.cos(a), sn = Math.sin(a);
+    let lx = s.textAlign === 'center' ? -w / 2 : s.textAlign === 'right' || s.textAlign === 'end' ? -w : 0;
+    const base = s.textBaseline === 'middle' ? fs * 0.35 : s.textBaseline === 'top' ? fs * 0.8 : 0;
+    const m = a ? pn(c) + ' ' + pn(-sn) + ' ' + pn(sn) + ' ' + pn(c) : '1 0 0 1';
     const out = ['BT ' + pdfColor(s.fillStyle) + ' rg'];
     for (const r of runs) {
-      out.push('/' + r.font + ' ' + pn(fs * r.k * 0.75) + ' Tf 1 0 0 1 ' + pn(this.X(x0)) + ' ' + pn(this.Y(base - r.rise * fs)) + ' Tm ' + pdfStr(r.codes) + ' Tj');
-      x0 += r.w;
+      const ly = base - r.rise * fs, px = x + lx * c - ly * sn, py = y + lx * sn + ly * c;
+      out.push('/' + r.font + ' ' + pn(fs * r.k * 0.75) + ' Tf ' + m + ' ' + pn(this.X(px)) + ' ' + pn(this.Y(py)) + ' Tm ' + pdfStr(r.codes) + ' Tj');
+      lx += r.w;
     }
     out.push('ET');
     this.ops.push(out.join('\n'));
@@ -10460,8 +10506,9 @@ class TikzCtx {
     const h = s.textAlign === 'center' ? '' : s.textAlign === 'right' || s.textAlign === 'end' ? 'east' : 'west';
     const v = s.textBaseline === 'middle' ? '' : s.textBaseline === 'top' ? 'north' : 'base';
     const anchor = [v, h].filter(Boolean).join(' ') || 'center';
-    this.out.push('\\node[anchor=' + anchor + ', inner sep=0pt, text=' + this.color(s.fillStyle) + ', font=' + size + bold + '] at ' + this.P(x, y) + ' {' + texEsc(t) + '};');
+    this.out.push('\\node[anchor=' + anchor + ', inner sep=0pt, text=' + this.color(s.fillStyle) + ', font=' + size + bold + (this.rot ? ', rotate=' + tn(-this.rot / DEG) : '') + '] at ' + this.P(x, y) + ' {' + texEsc(t) + '};');
   }
+  fillTextRot(t, x, y, a) { this.rot = a; this.fillText(t, x, y); this.rot = 0; }
 }
 /* o: { size: 'fit' | 'real' | 'sheet', width (cm), dims, notes, standalone } */
 function buildTikz(o) {

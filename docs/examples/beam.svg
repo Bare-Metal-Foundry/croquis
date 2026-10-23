@@ -9,14 +9,14 @@
 <path d="M90 172L690 172" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 172L99 168.8L99 175.2Z" fill="#111418"/>
 <path d="M690 172L681 175.2L681 168.8Z" fill="#111418"/>
-<rect x="370.4" y="163.5" width="39.2" height="17" fill="#ffffff"/>
+<path d="M370.4 163.5L409.6 163.5L409.6 180.5L370.4 180.5Z" fill="#ffffff"/>
 <text x="390" y="177.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">1000</text>
 <path d="M90 104L90 154" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M480 104L480 154" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 148L480 148" fill="none" stroke="#111418" stroke-width="1" stroke-linecap="butt" stroke-linejoin="round"/>
 <path d="M90 148L99 144.8L99 151.2Z" fill="#111418"/>
 <path d="M480 148L471 151.2L471 144.8Z" fill="#111418"/>
-<rect x="269.3" y="139.5" width="31.4" height="17" fill="#ffffff"/>
+<path d="M269.3 139.5L300.7 139.5L300.7 156.5L269.3 156.5Z" fill="#ffffff"/>
 <text x="285" y="153.55" font-family="&quot;B612 Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="400" text-anchor="middle" fill="#111418">650</text>
 <path d="M90 100L79 117.6L101 117.6Z" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M73.5 117.6L106.5 117.6" fill="none" stroke="#c2378f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
